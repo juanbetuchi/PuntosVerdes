@@ -76,6 +76,7 @@ export default function PuntosVerdesBot() {
   const [pos, setPos]       = useState({ x: 0, y: 0 })
   const [dragging, setDragging] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const lastTouchTime = useRef(0)
 
   /* wave inicial */
   useEffect(() => {
@@ -90,7 +91,12 @@ export default function PuntosVerdesBot() {
   /* ── Drag + click ── */
   function handlePointerDown(e: React.MouseEvent | React.TouchEvent) {
     const isTouch = 'touches' in e
-    if (!isTouch) e.preventDefault()
+    if (!isTouch) {
+      if (Date.now() - lastTouchTime.current < 600) return  // ignorar ghost click de mobile
+      e.preventDefault()
+    } else {
+      lastTouchTime.current = Date.now()
+    }
     const startX = isTouch ? (e as React.TouchEvent).touches[0].clientX : (e as React.MouseEvent).clientX
     const startY = isTouch ? (e as React.TouchEvent).touches[0].clientY : (e as React.MouseEvent).clientY
     const origPos = { ...pos }
