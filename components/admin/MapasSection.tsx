@@ -39,8 +39,8 @@ function compressImage(file: File, maxWidth = 960, quality = 0.82): Promise<stri
 
 /* ── Campo de imagen: URL o subir archivo ── */
 function ImageInput({
-  value, onChange, formId,
-}: { value: string; onChange: (v: string) => void; formId: string }) {
+  value, onChange,
+}: { value: string; onChange: (v: string) => void }) {
   const [mode, setMode]         = useState<'url' | 'file'>('url')
   const [dragging, setDragging] = useState(false)
   const [processing, setProcessing] = useState(false)
@@ -277,7 +277,7 @@ export default function MapasSection({ adminPin }: Props) {
                 </div>
                 <input type="text" placeholder="Nombre *" value={editForm.nombre} onChange={e => setEditForm(f => ({ ...f, nombre: e.target.value }))} className={inputClass} required autoFocus />
                 <input type="text" placeholder="Descripción (opcional)" value={editForm.descripcion} onChange={e => setEditForm(f => ({ ...f, descripcion: e.target.value }))} className={inputClass} />
-                <ImageInput value={editForm.imageUrl} onChange={v => setEditForm(f => ({ ...f, imageUrl: v }))} formId={`edit-${mapa._id}`} />
+                <ImageInput value={editForm.imageUrl} onChange={v => setEditForm(f => ({ ...f, imageUrl: v }))} />
                 <CatSelector value={editForm.categoria} onChange={v => setEditForm(f => ({ ...f, categoria: v }))} name={`edit-cat-${mapa._id}`} />
                 <div className="flex gap-2 pt-1">
                   <button type="submit" disabled={saving} className="flex-1 py-2 bg-[#4caf50] hover:bg-[#43a047] text-white text-sm font-medium rounded-lg disabled:opacity-50 transition-colors">
@@ -296,7 +296,7 @@ export default function MapasSection({ adminPin }: Props) {
         <h3 className="text-sm font-semibold text-white/80">Crear mapa</h3>
         <input type="text" placeholder="Nombre del mapa *" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} className={inputClass} required />
         <input type="text" placeholder="Descripción (opcional)" value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} className={inputClass} />
-        <ImageInput value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} formId="new-mapa" />
+        <ImageInput value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} />
         <CatSelector value={form.categoria} onChange={v => setForm(f => ({ ...f, categoria: v }))} name="new-categoria" />
         <button type="submit" disabled={loading} className="w-full py-2 bg-[#4caf50] hover:bg-[#43a047] text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50">
           {loading ? 'Creando...' : 'Crear mapa'}
