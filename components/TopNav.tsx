@@ -38,32 +38,29 @@ export default function TopNav({ categoria, onCategoriaChange, onHome }: TopNavP
         {/* Barra principal — muy transparente como Ciudades Verdes */}
         <div className="bg-[#071410]/45 backdrop-blur-lg border-b border-white/8">
 
-          <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-6">
+          <div className="w-full px-3 sm:px-6 h-16 flex items-center justify-between gap-4">
 
-            {/* Logo — estilo CIUDADES VERDES */}
+            {/* Logo */}
             <button
               onClick={() => { onHome(); setMobileOpen(false) }}
-              className="flex items-center gap-3 group flex-shrink-0"
+              className="flex items-center gap-2 group flex-shrink-0"
             >
-              {/* Logo ciudad */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="https://gkqpcbqdzdmhiokosvxa.supabase.co/storage/v1/object/public/datos/logo%20de%20la%20ciudad-Photoroom.png"
                 alt="Ciudad de Laboulaye"
-                className="h-9 w-auto object-contain flex-shrink-0 drop-shadow-lg"
+                className="h-8 w-auto object-contain flex-shrink-0 drop-shadow-lg"
               />
-              <div className="w-px h-6 bg-white/15 flex-shrink-0" />
-              <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
-                <svg viewBox="0 0 24 24" fill="#4caf50" className="w-6 h-6 drop-shadow-lg">
-                  <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/>
-                </svg>
-              </div>
+              <div className="w-px h-5 bg-white/20 flex-shrink-0" />
+              <svg viewBox="0 0 24 24" fill="#4caf50" className="w-5 h-5 flex-shrink-0 drop-shadow-lg">
+                <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/>
+              </svg>
               <div className="text-left leading-none">
-                <p className="font-black text-base tracking-tight">
+                <p className="font-black text-sm sm:text-base tracking-tight">
                   <span className="text-white uppercase">Puntos</span>
                   <span className="text-[#4caf50] uppercase"> Verdes</span>
                 </p>
-                <p className="text-white/55 text-[9px] tracking-[0.18em] uppercase mt-0.5">Ciudad de Laboulaye</p>
+                <p className="text-white/55 text-[9px] tracking-[0.16em] uppercase mt-0.5">Ciudad de Laboulaye</p>
               </div>
             </button>
 
