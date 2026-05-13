@@ -104,7 +104,7 @@ function HomeScreen({ onSelect }: { onSelect: (c: 'local' | 'provincial') => voi
           </svg>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-2xl">
             <span className="text-white">Puntos </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a5d6a7] via-[#66bb6a] to-[#4caf50]">Verdes</span>
+            <span className="verdes-shimmer">Verdes</span>
           </h1>
           <svg viewBox="0 0 24 24" fill="#4caf50" className="w-8 h-8 md:w-11 md:h-11 opacity-80 drop-shadow-xl scale-x-[-1]">
             <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/>

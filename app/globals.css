@@ -112,6 +112,22 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 0 0 1px rgba(76,175,80,0.35), 0 8px 32px rgba(76,175,80,0.12), 0 2px 8px rgba(0,0,0,0.4);
 }
 
+/* ── Shimmer "Verdes" ── */
+@keyframes verdesShimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.verdes-shimmer {
+  background: linear-gradient(90deg, #c8e6c9, #81c784, #4caf50, #2e7d32, #66bb6a, #a5d6a7, #4caf50);
+  background-size: 300% auto;
+  animation: verdesShimmer 4s ease-in-out infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 18px rgba(76,175,80,0.45));
+}
+
 /* ── Cards blancas glassmorphism ── */
 .glass-card {
   background: rgba(255,255,255,0.055);

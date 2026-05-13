@@ -55,7 +55,7 @@ export default function TopNav({ categoria, onCategoriaChange, onHome }: TopNavP
                   <span className="text-white uppercase">Puntos</span>
                   <span className="text-[#4caf50] uppercase"> Verdes</span>
                 </p>
-                <p className="text-white/30 text-[9px] tracking-[0.18em] uppercase mt-0.5">Ciudad de Laboulaye</p>
+                <p className="text-white/55 text-[9px] tracking-[0.18em] uppercase mt-0.5">Ciudad de Laboulaye</p>
               </div>
             </button>
 
@@ -69,7 +69,7 @@ export default function TopNav({ categoria, onCategoriaChange, onHome }: TopNavP
                     relative flex items-center gap-2 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider transition-all duration-200 group rounded-lg
                     ${categoria === key
                       ? 'text-white bg-white/8 border border-white/10'
-                      : 'text-white/50 hover:text-white/85 hover:bg-white/5 border border-transparent'}
+                      : 'text-white/75 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10'}
                   `}
                 >
                   {/* Línea inferior activo */}
@@ -129,7 +129,7 @@ export default function TopNav({ categoria, onCategoriaChange, onHome }: TopNavP
                   w-full flex items-center gap-3 px-3 py-3 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all text-left
                   ${categoria === key
                     ? 'text-white bg-white/8 border border-white/10'
-                    : 'text-white/45 hover:text-white/75 hover:bg-white/5 border border-transparent'}
+                    : 'text-white/75 hover:text-white hover:bg-white/5 border border-transparent'}
                 `}
               >
                 <span className={categoria === key ? 'text-[#81c784]' : 'text-[#4caf50]/45'}>{icon}</span>
