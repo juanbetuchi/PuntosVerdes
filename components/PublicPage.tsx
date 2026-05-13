@@ -116,25 +116,25 @@ function HomeScreen({ onSelect }: { onSelect: (c: 'local' | 'provincial') => voi
         </p>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-lg">
+        <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4 w-full max-w-lg">
           {homeCards.map((card, i) => (
             <button
               key={card.key}
               onClick={() => onSelect(card.key)}
-              className="glass-card rounded-2xl p-7 text-left flex flex-col gap-4 group fade-in-up"
+              className="glass-card card-leaf-mobile sm:rounded-2xl p-4 sm:p-7 text-left sm:text-left flex flex-col items-center sm:items-start gap-3 sm:gap-4 group fade-in-up"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/10 border border-white/14 group-hover:bg-white/17 transition-colors shadow-inner">
-                {card.icon}
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center bg-white/10 border border-white/14 group-hover:bg-white/17 transition-colors shadow-inner">
+                <div className="w-6 h-6 sm:w-9 sm:h-9 [&>svg]:w-full [&>svg]:h-full">{card.icon}</div>
               </div>
               <div>
-                <p className="text-white font-bold text-lg leading-tight">{card.label}</p>
-                <p className="text-white/38 text-xs mt-1">{card.sub}</p>
+                <p className="text-white font-bold text-sm sm:text-lg leading-tight">{card.label}</p>
+                <p className="text-white/38 text-[10px] sm:text-xs mt-1">{card.sub}</p>
               </div>
-              <div className="mt-auto pt-3 border-t border-white/8 flex items-center justify-between">
-                <span className="text-white/30 text-xs uppercase tracking-wider">Ver mapa</span>
+              <div className="mt-auto pt-2 sm:pt-3 border-t border-white/8 w-full flex items-center justify-center sm:justify-between">
+                <span className="text-white/30 text-[10px] sm:text-xs uppercase tracking-wider">Ver mapa</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"
-                  className="w-4 h-4 opacity-30 group-hover:opacity-65 group-hover:translate-x-1.5 transition-all duration-200">
+                  className="hidden sm:block w-4 h-4 opacity-30 group-hover:opacity-65 group-hover:translate-x-1.5 transition-all duration-200">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </div>

@@ -112,6 +112,18 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 0 0 1px rgba(76,175,80,0.35), 0 8px 32px rgba(76,175,80,0.12), 0 2px 8px rgba(0,0,0,0.4);
 }
 
+/* ── Cards hoja mobile ── */
+@media (max-width: 639px) {
+  .card-leaf-mobile {
+    border-radius: 62% 38% 46% 54% / 55% 55% 45% 45%;
+    align-items: center !important;
+    text-align: center;
+  }
+  .card-leaf-mobile:nth-child(2) {
+    border-radius: 38% 62% 54% 46% / 55% 55% 45% 45%;
+  }
+}
+
 /* ── Shimmer "Verdes" ── */
 @keyframes verdesShimmer {
   0%   { background-position: 0% 50%; }
