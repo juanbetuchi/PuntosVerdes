@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextResponse } from 'next/server'
 import { seedIfEmpty } from '@/lib/seed'
 import { connectDB } from '@/lib/mongodb'
