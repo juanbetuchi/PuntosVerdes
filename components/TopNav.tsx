@@ -45,8 +45,16 @@ export default function TopNav({ categoria, onCategoriaChange, onHome }: TopNavP
               onClick={() => { onHome(); setMobileOpen(false) }}
               className="flex items-center gap-3 group flex-shrink-0"
             >
-              <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-                <svg viewBox="0 0 24 24" fill="#4caf50" className="w-8 h-8 drop-shadow-lg">
+              {/* Logo ciudad */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://gkqpcbqdzdmhiokosvxa.supabase.co/storage/v1/object/public/datos/logo%20de%20la%20ciudad-Photoroom.png"
+                alt="Ciudad de Laboulaye"
+                className="h-9 w-auto object-contain flex-shrink-0 drop-shadow-lg"
+              />
+              <div className="w-px h-6 bg-white/15 flex-shrink-0" />
+              <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <svg viewBox="0 0 24 24" fill="#4caf50" className="w-6 h-6 drop-shadow-lg">
                   <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/>
                 </svg>
               </div>
