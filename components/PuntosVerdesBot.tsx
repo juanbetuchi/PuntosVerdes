@@ -89,17 +89,20 @@ export default function PuntosVerdesBot() {
 
   /* ── Drag + click ── */
   function handlePointerDown(e: React.MouseEvent | React.TouchEvent) {
-    e.preventDefault()
-    const startX = 'touches' in e ? e.touches[0].clientX : e.clientX
-    const startY = 'touches' in e ? e.touches[0].clientY : e.clientY
+    const isTouch = 'touches' in e
+    if (!isTouch) e.preventDefault()
+    const startX = isTouch ? (e as React.TouchEvent).touches[0].clientX : (e as React.MouseEvent).clientX
+    const startY = isTouch ? (e as React.TouchEvent).touches[0].clientY : (e as React.MouseEvent).clientY
     const origPos = { ...pos }
     let moved = false
 
     function onMove(ev: MouseEvent | TouchEvent) {
-      const cx = 'touches' in ev ? (ev as TouchEvent).touches[0].clientX : (ev as MouseEvent).clientX
-      const cy = 'touches' in ev ? (ev as TouchEvent).touches[0].clientY : (ev as MouseEvent).clientY
-      if (Math.abs(cx - startX) > 4 || Math.abs(cy - startY) > 4) moved = true
+      const isT = 'touches' in ev
+      const cx = isT ? (ev as TouchEvent).touches[0].clientX : (ev as MouseEvent).clientX
+      const cy = isT ? (ev as TouchEvent).touches[0].clientY : (ev as MouseEvent).clientY
+      if (Math.abs(cx - startX) > 10 || Math.abs(cy - startY) > 10) moved = true
       if (moved) {
+        if (isT) ev.preventDefault()
         setDragging(true)
         setPos({ x: origPos.x + (cx - startX), y: origPos.y + (cy - startY) })
       }
