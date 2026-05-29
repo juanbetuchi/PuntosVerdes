@@ -111,9 +111,9 @@ function HomeScreen({ onSelect, stats }: {
 
         {/* Badge */}
         <div className="flex items-center justify-center gap-2 mb-5">
-          <div className="h-px w-10 bg-gradient-to-r from-transparent to-white/20" />
-          <span className="text-white/40 text-[11px] uppercase tracking-[0.28em]">Ciudad de Laboulaye</span>
-          <div className="h-px w-10 bg-gradient-to-l from-transparent to-white/20" />
+          <div className="h-px w-10 bg-gradient-to-r from-transparent to-white/40" />
+          <span className="text-white/80 text-[11px] uppercase tracking-[0.28em]">Ciudad de Laboulaye</span>
+          <div className="h-px w-10 bg-gradient-to-l from-transparent to-white/40" />
         </div>
 
         {/* Título */}
@@ -147,7 +147,7 @@ function HomeScreen({ onSelect, stats }: {
           ))}
         </div>
 
-        <p className="text-white/40 text-sm mb-8 tracking-wide">
+        <p className="text-white/75 text-sm mb-8 tracking-wide">
           Seleccioná una categoría para explorar el mapa
         </p>
 
