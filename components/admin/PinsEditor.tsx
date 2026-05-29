@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Toast from '../Toast'
+import ImageInput from './ImageInput'
 
 interface Mapa { _id: string; nombre: string; imageUrl: string }
 interface Pin {
@@ -26,9 +27,10 @@ function PinForm({ values, onChange, onSubmit, onCancel, title, saving }: {
       <textarea placeholder="Descripción (opcional)" value={values.descripcion} onChange={e => onChange({ ...values, descripcion: e.target.value })} className={`${inputClass} resize-none h-16`} />
       <input type="text" placeholder="Dirección (para mini-mapa, ej: Av. San Martín 123 Laboulaye)" value={values.direccion} onChange={e => onChange({ ...values, direccion: e.target.value })} className={inputClass} />
       {[0,1,2].map(i => (
-        <input key={i} type="url" placeholder={`URL imagen ${i+1} (opcional)`} value={values.imagenes[i]}
-          onChange={e => { const imgs = [...values.imagenes]; imgs[i] = e.target.value; onChange({ ...values, imagenes: imgs }) }}
-          className={inputClass} />
+        <div key={i}>
+          <p className="text-white/40 text-xs mb-1">Imagen {i+1} (opcional)</p>
+          <ImageInput value={values.imagenes[i]} onChange={v => { const imgs = [...values.imagenes]; imgs[i] = v; onChange({ ...values, imagenes: imgs }) }} />
+        </div>
       ))}
       <input type="url" placeholder="URL video (YouTube o directo, opcional)" value={values.videoUrl} onChange={e => onChange({ ...values, videoUrl: e.target.value })} className={inputClass} />
       <div className="flex gap-2 pt-1">
