@@ -126,15 +126,26 @@ function HomeScreen({ onSelect }: { onSelect: (c: 'local' | 'provincial') => voi
             >
               {/* Planta que crece desde la base al hover */}
               {[
-                { rot: '0deg',   left: 'calc(50% - 25px)', w: 50, fill: '#556729', delay: '0s'     },
-                { rot: '20deg',  left: 'calc(57% - 27px)', w: 54, fill: '#7B9B3A', delay: '0.08s'  },
-                { rot: '-20deg', left: 'calc(43% - 27px)', w: 54, fill: '#7B9B3A', delay: '0.08s'  },
-                { rot: '44deg',  left: 'calc(65% - 30px)', w: 62, fill: '#3C4819', delay: '0.18s'  },
-                { rot: '-44deg', left: 'calc(35% - 30px)', w: 62, fill: '#3C4819', delay: '0.18s'  },
-              ].map(({ rot, left, w, fill, delay }, idx) => (
+                { rot: '0deg',   left: 'calc(50% - 30px)', w: 60,  fill: '#4a6b20', vein: '#2a3d10', delay: '0s'    },
+                { rot: '22deg',  left: 'calc(58% - 30px)', w: 58,  fill: '#5a7a28', vein: '#2a3d10', delay: '0.07s' },
+                { rot: '-22deg', left: 'calc(42% - 30px)', w: 58,  fill: '#5a7a28', vein: '#2a3d10', delay: '0.07s' },
+                { rot: '46deg',  left: 'calc(67% - 32px)', w: 64,  fill: '#3a5518', vein: '#1e2e0a', delay: '0.16s' },
+                { rot: '-46deg', left: 'calc(33% - 32px)', w: 64,  fill: '#3a5518', vein: '#1e2e0a', delay: '0.16s' },
+              ].map(({ rot, left, w, fill, vein, delay }, idx) => (
                 <span key={idx} className="hcl-stem" style={{ left, transform: `rotate(${rot})` }}>
-                  <svg className="hcl-leaf" style={{ width: w, height: 'auto', transitionDelay: delay }} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z" fill={fill}/>
+                  <svg className="hcl-leaf" style={{ width: w, height: 'auto', transitionDelay: delay }} viewBox="0 0 32 52" xmlns="http://www.w3.org/2000/svg">
+                    {/* Hoja ovalada con punta, base abajo */}
+                    <path d="M16 50 C7 42 1 32 1 19 C1 8 8 1 16 1 C24 1 31 8 31 19 C31 32 25 42 16 50Z" fill={fill}/>
+                    {/* Vena central */}
+                    <path d="M16 49 L16 2" stroke={vein} strokeWidth="0.9" fill="none"/>
+                    {/* Venas laterales izquierda */}
+                    <path d="M16 15 Q10 12 5 14" stroke={vein} strokeWidth="0.45" fill="none" opacity="0.75"/>
+                    <path d="M16 23 Q9 20 4 22"  stroke={vein} strokeWidth="0.45" fill="none" opacity="0.75"/>
+                    <path d="M16 31 Q10 28 6 30"  stroke={vein} strokeWidth="0.45" fill="none" opacity="0.75"/>
+                    {/* Venas laterales derecha */}
+                    <path d="M16 15 Q22 12 27 14" stroke={vein} strokeWidth="0.45" fill="none" opacity="0.75"/>
+                    <path d="M16 23 Q23 20 28 22" stroke={vein} strokeWidth="0.45" fill="none" opacity="0.75"/>
+                    <path d="M16 31 Q22 28 26 30" stroke={vein} strokeWidth="0.45" fill="none" opacity="0.75"/>
                   </svg>
                 </span>
               ))}
