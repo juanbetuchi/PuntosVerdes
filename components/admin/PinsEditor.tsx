@@ -13,6 +13,34 @@ interface Pin {
 
 const emptyForm = { titulo: '', descripcion: '', imagenes: ['', '', ''], videoUrl: '', direccion: '' }
 
+const inputClass = 'w-full bg-[#1a3a2a] border border-[#4caf50]/20 rounded-lg px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#4caf50]'
+
+function PinForm({ values, onChange, onSubmit, onCancel, title, saving }: {
+  values: typeof emptyForm; onChange: (v: typeof emptyForm) => void
+  onSubmit: (e: React.FormEvent) => void; onCancel: () => void; title: string; saving: boolean
+}) {
+  return (
+    <form onSubmit={onSubmit} className="mt-4 bg-[#243d2e] rounded-xl p-4 border border-[#4caf50]/30 space-y-2.5">
+      <h4 className="text-sm font-semibold text-[#4caf50]">{title}</h4>
+      <input type="text" placeholder="Título *" value={values.titulo} onChange={e => onChange({ ...values, titulo: e.target.value })} className={inputClass} required autoFocus />
+      <textarea placeholder="Descripción (opcional)" value={values.descripcion} onChange={e => onChange({ ...values, descripcion: e.target.value })} className={`${inputClass} resize-none h-16`} />
+      <input type="text" placeholder="Dirección (para mini-mapa, ej: Av. San Martín 123 Laboulaye)" value={values.direccion} onChange={e => onChange({ ...values, direccion: e.target.value })} className={inputClass} />
+      {[0,1,2].map(i => (
+        <input key={i} type="url" placeholder={`URL imagen ${i+1} (opcional)`} value={values.imagenes[i]}
+          onChange={e => { const imgs = [...values.imagenes]; imgs[i] = e.target.value; onChange({ ...values, imagenes: imgs }) }}
+          className={inputClass} />
+      ))}
+      <input type="url" placeholder="URL video (YouTube o directo, opcional)" value={values.videoUrl} onChange={e => onChange({ ...values, videoUrl: e.target.value })} className={inputClass} />
+      <div className="flex gap-2 pt-1">
+        <button type="submit" disabled={saving} className="flex-1 py-2 bg-[#4caf50] hover:bg-[#43a047] text-white text-sm font-medium rounded-lg disabled:opacity-50">
+          {saving ? 'Guardando...' : 'Guardar pin'}
+        </button>
+        <button type="button" onClick={onCancel} className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm rounded-lg">Cancelar</button>
+      </div>
+    </form>
+  )
+}
+
 interface Props { adminPin: string }
 
 export default function PinsEditor({ adminPin }: Props) {
@@ -181,33 +209,6 @@ export default function PinsEditor({ adminPin }: Props) {
   }
 
   const selectedMapa = mapas.find(m => m._id === selectedId)
-  const inputClass   = 'w-full bg-[#1a3a2a] border border-[#4caf50]/20 rounded-lg px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#4caf50]'
-
-  function PinForm({ values, onChange, onSubmit, onCancel, title }: {
-    values: typeof emptyForm; onChange: (v: typeof emptyForm) => void
-    onSubmit: (e: React.FormEvent) => void; onCancel: () => void; title: string
-  }) {
-    return (
-      <form onSubmit={onSubmit} className="mt-4 bg-[#243d2e] rounded-xl p-4 border border-[#4caf50]/30 space-y-2.5">
-        <h4 className="text-sm font-semibold text-[#4caf50]">{title}</h4>
-        <input type="text" placeholder="Título *" value={values.titulo} onChange={e => onChange({ ...values, titulo: e.target.value })} className={inputClass} required autoFocus />
-        <textarea placeholder="Descripción (opcional)" value={values.descripcion} onChange={e => onChange({ ...values, descripcion: e.target.value })} className={`${inputClass} resize-none h-16`} />
-        <input type="text" placeholder="Dirección (para mini-mapa, ej: Av. San Martín 123 Laboulaye)" value={values.direccion} onChange={e => onChange({ ...values, direccion: e.target.value })} className={inputClass} />
-        {[0,1,2].map(i => (
-          <input key={i} type="url" placeholder={`URL imagen ${i+1} (opcional)`} value={values.imagenes[i]}
-            onChange={e => { const imgs = [...values.imagenes]; imgs[i] = e.target.value; onChange({ ...values, imagenes: imgs }) }}
-            className={inputClass} />
-        ))}
-        <input type="url" placeholder="URL video (YouTube o directo, opcional)" value={values.videoUrl} onChange={e => onChange({ ...values, videoUrl: e.target.value })} className={inputClass} />
-        <div className="flex gap-2 pt-1">
-          <button type="submit" disabled={saving} className="flex-1 py-2 bg-[#4caf50] hover:bg-[#43a047] text-white text-sm font-medium rounded-lg disabled:opacity-50">
-            {saving ? 'Guardando...' : 'Guardar pin'}
-          </button>
-          <button type="button" onClick={onCancel} className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm rounded-lg">Cancelar</button>
-        </div>
-      </form>
-    )
-  }
 
   return (
     <div>
@@ -282,11 +283,11 @@ export default function PinsEditor({ adminPin }: Props) {
 
         {newCoords && !editingPin && (
           <PinForm values={form} onChange={setForm} onSubmit={handleSaveNew} onCancel={() => setNewCoords(null)}
-            title={`Nuevo pin (${newCoords.x.toFixed(1)}%, ${newCoords.y.toFixed(1)}%)`} />
+            title={`Nuevo pin (${newCoords.x.toFixed(1)}%, ${newCoords.y.toFixed(1)}%)`} saving={saving} />
         )}
         {editingPin && (
           <PinForm values={editForm} onChange={setEditForm} onSubmit={handleSaveEdit} onCancel={() => setEditingPin(null)}
-            title={`Editar: ${editingPin.titulo}`} />
+            title={`Editar: ${editingPin.titulo}`} saving={saving} />
         )}
 
         {pins.length > 0 && (
