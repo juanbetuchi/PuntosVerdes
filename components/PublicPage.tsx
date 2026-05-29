@@ -121,9 +121,22 @@ function HomeScreen({ onSelect }: { onSelect: (c: 'local' | 'provincial') => voi
             <button
               key={card.key}
               onClick={() => onSelect(card.key)}
-              className="glass-card card-leaf-mobile sm:rounded-2xl p-4 sm:p-7 text-left sm:text-left flex flex-col items-center sm:items-start gap-3 sm:gap-4 group fade-in-up"
+              className="home-card-leaves glass-card card-leaf-mobile sm:rounded-2xl p-4 sm:p-7 text-left sm:text-left flex flex-col items-center sm:items-start gap-3 sm:gap-4 group fade-in-up"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
+              {/* 5 hojas que vuelan hacia arriba al hover */}
+              {[
+                { cls: 'hcl hcl-1', fill: '#7B9B3A' },
+                { cls: 'hcl hcl-2', fill: '#556729' },
+                { cls: 'hcl hcl-3', fill: '#7B9B3A' },
+                { cls: 'hcl hcl-4', fill: '#3C4819' },
+                { cls: 'hcl hcl-5', fill: '#3C4819' },
+              ].map(({ cls, fill }, idx) => (
+                <svg key={idx} className={cls} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 2C9 8 6 16 6 24c3-4 6-6 10-7-1 4-2 8 0 13 2-5 4-9 4-13 4 1 7 3 10 7 0-8-3-16-14-22z" fill={fill}/>
+                  <path d="M16 10c-2 3-3 7-3 12h1c0-4 1-8 2-12z" fill="#2a3510" fillRule="nonzero"/>
+                </svg>
+              ))}
               <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center bg-white/10 border border-white/14 group-hover:bg-white/17 transition-colors shadow-inner">
                 <div className="w-6 h-6 sm:w-9 sm:h-9 [&>svg]:w-full [&>svg]:h-full">{card.icon}</div>
               </div>

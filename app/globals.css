@@ -140,7 +140,7 @@ html { scroll-behavior: smooth; }
   filter: drop-shadow(0 0 18px rgba(76,175,80,0.45));
 }
 
-/* ── Nav buttons efecto hojas flotantes ── */
+/* ── Keyframes compartidos para hojas flotantes ── */
 @keyframes navInIcon1 {
   0%   { transform-origin: 0 100%; transform: translate(-50%, 0) rotate(0deg); }
   25%  { transform-origin: 0 100%; transform: translate(-50%, 0) rotate(5deg); }
@@ -170,47 +170,64 @@ html { scroll-behavior: smooth; }
   35%  { transform-origin: 0 100%; transform: translate(-50%, 0) rotate(-3deg); }
   100% { transform-origin: 0 100%; transform: translate(-50%, 0) rotate(0deg); }
 }
-.nav-wind-btn {
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.35), inset 2px 2px 8px rgba(76,175,80,0.07);
-  transition: all 0.3s ease-in-out !important;
+
+/* ── Nav buttons: cubrirse de hojas ── */
+.nav-leaf-fill-btn {
+  overflow: hidden !important;
+  transition: background 0.35s ease, border-color 0.3s ease !important;
 }
-.nav-wind-btn:hover {
-  border-radius: 8px 8px 20px 20px !important;
-  background: rgba(46,125,50,0.5) !important;
-  border-color: rgba(76,175,80,0.55) !important;
+.nav-leaf-fill-btn:hover {
+  background: rgba(8, 38, 12, 0.92) !important;
+  border-color: rgba(76,175,80,0.7) !important;
   color: white !important;
 }
-.nav-wind-btn .nw-icon {
+.nav-leaf-fill-btn .nlf {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.nav-leaf-fill-btn:hover .nlf { opacity: 0.80; }
+.nlf-1 { top: -3px;    left: -2px;  width: 22px; transform: rotate(15deg)   scale(0); }
+.nlf-2 { top: -3px;    right: -1px; width: 16px; transform: rotate(-22deg)  scale(0); }
+.nlf-3 { bottom: -3px; left:  3px;  width: 20px; transform: rotate(148deg)  scale(0); }
+.nlf-4 { bottom: -3px; right: 2px;  width: 15px; transform: rotate(162deg)  scale(0); }
+.nlf-5 { top: 28%;     left: -3px;  width: 19px; transform: rotate(72deg)   scale(0); }
+.nlf-6 { top: 28%;     right: -2px; width: 16px; transform: rotate(-68deg)  scale(0); }
+.nlf-7 { top: -2px;    left: 36%;   width: 14px; transform: rotate(8deg)    scale(0); }
+.nlf-8 { bottom: -2px; left: 52%;   width: 13px; transform: rotate(-155deg) scale(0); }
+.nav-leaf-fill-btn:hover .nlf-1 { transform: rotate(15deg)   scale(1.1); transition-delay: 0s;    }
+.nav-leaf-fill-btn:hover .nlf-2 { transform: rotate(-22deg)  scale(1);   transition-delay: 0.04s; }
+.nav-leaf-fill-btn:hover .nlf-3 { transform: rotate(148deg)  scale(1.1); transition-delay: 0.09s; }
+.nav-leaf-fill-btn:hover .nlf-4 { transform: rotate(162deg)  scale(1);   transition-delay: 0.06s; }
+.nav-leaf-fill-btn:hover .nlf-5 { transform: rotate(72deg)   scale(1.1); transition-delay: 0.11s; }
+.nav-leaf-fill-btn:hover .nlf-6 { transform: rotate(-68deg)  scale(1);   transition-delay: 0.05s; }
+.nav-leaf-fill-btn:hover .nlf-7 { transform: rotate(8deg)    scale(1);   transition-delay: 0.03s; }
+.nav-leaf-fill-btn:hover .nlf-8 { transform: rotate(-155deg) scale(1.1); transition-delay: 0.07s; }
+
+/* ── Home cards: hojas que vuelan hacia arriba ── */
+.home-card-leaves {
+  transition: all 0.3s ease-in-out !important;
+}
+.home-card-leaves:hover {
+  border-radius: 12px 12px 28px 28px !important;
+}
+.home-card-leaves .hcl {
   position: absolute;
   top: 10%;
   left: 50%;
   transform: translate(-50%, 0);
-  width: 0px;
+  width: 0;
   height: auto;
   transition: all 0.5s ease-in-out;
   pointer-events: none;
   z-index: 50;
 }
-.nav-wind-btn:hover .nw-icon-1 {
-  top: -250%; left: 50%; width: 36px;
-  animation: navInIcon1 1s ease 0.45s forwards;
-}
-.nav-wind-btn:hover .nw-icon-2 {
-  top: -200%; left: 90%; width: 50px;
-  animation: navInIcon2 1s ease 0.45s forwards;
-}
-.nav-wind-btn:hover .nw-icon-3 {
-  top: -130%; left: 20%; width: 42px;
-  animation: navInIcon3 1s ease 0.45s forwards;
-}
-.nav-wind-btn:hover .nw-icon-4 {
-  top: -300%; left: 10%; width: 55px;
-  animation: navInIcon4 1s ease 0.45s forwards;
-}
-.nav-wind-btn:hover .nw-icon-5 {
-  top: -350%; left: 90%; width: 55px;
-  animation: navInIcon5 1s ease 0.45s forwards;
-}
+.home-card-leaves:hover .hcl-1 { top: -55%; left: 50%; width: 55px; animation: navInIcon1 1s ease 0.45s forwards; }
+.home-card-leaves:hover .hcl-2 { top: -45%; left: 88%; width: 68px; animation: navInIcon2 1s ease 0.45s forwards; }
+.home-card-leaves:hover .hcl-3 { top: -30%; left: 14%; width: 58px; animation: navInIcon3 1s ease 0.45s forwards; }
+.home-card-leaves:hover .hcl-4 { top: -65%; left: 7%;  width: 72px; animation: navInIcon4 1s ease 0.45s forwards; }
+.home-card-leaves:hover .hcl-5 { top: -75%; left: 90%; width: 72px; animation: navInIcon5 1s ease 0.45s forwards; }
 
 /* ── Cards blancas glassmorphism ── */
 .glass-card {
