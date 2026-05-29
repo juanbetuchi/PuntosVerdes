@@ -48,15 +48,31 @@ interface Burst { id: number; x: number; y: number; emoji: string; dx: number; e
 const BURST_EMOJIS = ['🌿', '♻️', '🌱', '✨', '🍃', '💚']
 
 export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[] }) {
-  const [activePin, setActivePin]   = useState<Pin | null>(null)
-  const [hoveredId, setHoveredId]   = useState<string | null>(null)
-  const [bursts, setBursts]         = useState<Burst[]>([])
-  const [nearestId, setNearestId]   = useState<string | null>(null)
-  const [locating, setLocating]     = useState(false)
-  const [geoToast, setGeoToast]     = useState('')
-  const containerRef                = useRef<HTMLDivElement>(null)
+  const [activePin, setActivePin]     = useState<Pin | null>(null)
+  const [hoveredId, setHoveredId]     = useState<string | null>(null)
+  const [bursts, setBursts]           = useState<Burst[]>([])
+  const [nearestId, setNearestId]     = useState<string | null>(null)
+  const [locating, setLocating]       = useState(false)
+  const [geoToast, setGeoToast]       = useState('')
+  const [selectedMats, setSelectedMats] = useState<string[]>([])
+  const containerRef                  = useRef<HTMLDivElement>(null)
 
   const pinsConCoordenadas = pins.filter(p => p.lat != null && p.lng != null)
+
+  /* Materiales disponibles en este mapa (ordenados según MATERIALES_OPTS) */
+  const allMatKeys = [...new Set(pins.flatMap(p => p.materiales ?? []))]
+  const materialesDisponibles = [
+    ...MATERIALES_OPTS.filter(o => allMatKeys.includes(o.key)),
+    ...allMatKeys.filter(k => !MATERIALES_OPTS.find(o => o.key === k)).map(k => ({ key: k, emoji: '♻️', label: k })),
+  ]
+
+  function toggleMat(key: string) {
+    setSelectedMats(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])
+  }
+  function pinMatchesFiltro(pin: Pin) {
+    if (selectedMats.length === 0) return true
+    return selectedMats.some(m => pin.materiales?.includes(m))
+  }
 
   function findNearest() {
     if (!navigator.geolocation) { setGeoToast('Tu navegador no soporta geolocalización'); return }
@@ -153,6 +169,35 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
         </div>
       )}
 
+      {/* Filtro por material */}
+      {materialesDisponibles.length > 0 && (
+        <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+          <button
+            onClick={() => setSelectedMats([])}
+            className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+              selectedMats.length === 0
+                ? 'bg-[#4caf50]/20 border-[#4caf50]/50 text-white'
+                : 'bg-transparent border-white/15 text-white/40 hover:border-white/30 hover:text-white/70'
+            }`}
+          >
+            Todos
+          </button>
+          {materialesDisponibles.map(m => (
+            <button
+              key={m.key}
+              onClick={() => toggleMat(m.key)}
+              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                selectedMats.includes(m.key)
+                  ? 'bg-[#4caf50]/20 border-[#4caf50]/50 text-white'
+                  : 'bg-transparent border-white/15 text-white/40 hover:border-white/30 hover:text-white/70'
+              }`}
+            >
+              <span>{m.emoji}</span><span>{m.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Card imagen */}
       <div
         ref={containerRef}
@@ -214,15 +259,18 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
           const isActive  = activePin?._id === pin._id
           const isHovered = hoveredId === pin._id
           const isNearest = nearestId === pin._id && !isActive
+          const matches   = pinMatchesFiltro(pin)
           const pal = PIN_PALETTE[pin.color ?? 'green']
+          const validImages = (pin.imagenes ?? []).filter(Boolean)
           return (
             <button
               key={pin._id}
-              className="absolute -translate-x-1/2 -translate-y-1/2 group focus:outline-none z-20 pin-appear"
+              className="absolute -translate-x-1/2 -translate-y-1/2 group focus:outline-none z-20 pin-appear transition-opacity duration-300"
               style={{
                 left: `${pin.x}%`,
                 top: `${pin.y}%`,
                 animationDelay: `${idx * 0.08}s`,
+                opacity: matches ? 1 : 0.12,
               }}
               onClick={() => {
                 triggerBurst(pin)
@@ -265,16 +313,69 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
                 </g>
               </svg>
 
-              {/* Tooltip hover */}
+              {/* Preview hover rico */}
               {!isActive && (
-                <div className="hidden group-hover:flex absolute bottom-full left-1/2 -translate-x-1/2 mb-3 flex-col items-center pointer-events-none z-30">
-                  <div className="bg-[#071410]/95 backdrop-blur-sm border border-[#4caf50]/30 rounded-xl px-3 py-2 shadow-2xl w-44 text-left"
-                    style={{ boxShadow: '0 0 20px rgba(76,175,80,0.2)' }}>
-                    <p className="text-white/90 text-xs font-semibold leading-tight">{pin.titulo}</p>
-                    {pin.descripcion && <p className="text-white/45 text-xs mt-0.5 line-clamp-2">{pin.descripcion}</p>}
-                    <p className="text-[#4caf50]/50 text-[10px] mt-1">Click para ver más 🌿</p>
+                <div className="hidden group-hover:flex absolute bottom-full left-1/2 -translate-x-1/2 mb-3 flex-col items-center pointer-events-none z-30 w-56">
+                  <div className="bg-[#071410]/97 backdrop-blur-md border border-[#4caf50]/25 rounded-2xl overflow-hidden w-full text-left"
+                    style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.7), 0 0 20px rgba(76,175,80,0.12)' }}>
+                    {/* Imagen del pin */}
+                    {validImages[0] && (
+                      <div className="w-full h-28 overflow-hidden">
+                        <img src={validImages[0]} alt="" className="w-full h-full object-cover"
+                          onError={e => { (e.currentTarget.parentElement as HTMLElement).style.display = 'none' }} />
+                      </div>
+                    )}
+                    <div className="p-3">
+                      {/* Color + título */}
+                      <div className="flex items-start gap-2 mb-1">
+                        <span className="w-2 h-2 rounded-full flex-shrink-0 mt-1" style={{ background: pal.stroke }} />
+                        <p className="text-white text-xs font-bold leading-snug">{pin.titulo}</p>
+                      </div>
+                      {/* Descripción */}
+                      {pin.descripcion && (
+                        <p className="text-white/50 text-[11px] mt-1 line-clamp-2 leading-relaxed pl-4">{pin.descripcion}</p>
+                      )}
+                      {/* Materiales */}
+                      {pin.materiales && pin.materiales.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2 pl-4">
+                          {pin.materiales.slice(0, 5).map(mat => {
+                            const opt = MATERIALES_OPTS.find(o => o.key === mat)
+                            return (
+                              <span key={mat} className="text-[10px] bg-[#4caf50]/10 border border-[#4caf50]/15 text-white/65 px-1.5 py-0.5 rounded-full">
+                                {opt ? `${opt.emoji} ${opt.label}` : mat}
+                              </span>
+                            )
+                          })}
+                          {pin.materiales.length > 5 && (
+                            <span className="text-[10px] text-white/30">+{pin.materiales.length - 5}</span>
+                          )}
+                        </div>
+                      )}
+                      {/* Indicadores: fotos, video, dirección */}
+                      <div className="flex items-center gap-3 mt-2 pt-2 border-t border-white/5">
+                        {validImages.length > 1 && (
+                          <span className="flex items-center gap-1 text-[10px] text-white/35">
+                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                            {validImages.length} fotos
+                          </span>
+                        )}
+                        {pin.videoUrl && (
+                          <span className="flex items-center gap-1 text-[10px] text-white/35">
+                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M8 5v14l11-7z"/></svg>
+                            Video
+                          </span>
+                        )}
+                        {pin.direccion && (
+                          <span className="flex items-center gap-1 text-[10px] text-white/35">
+                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+                            Cómo llegar
+                          </span>
+                        )}
+                        <span className="ml-auto text-[#4caf50]/50 text-[10px]">ver más →</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-2.5 h-2.5 bg-[#071410]/95 border-b border-r border-[#4caf50]/30 rotate-45 -mt-1.5" />
+                  <div className="w-2.5 h-2.5 bg-[#071410]/97 border-b border-r border-[#4caf50]/25 rotate-45 -mt-1.5" />
                 </div>
               )}
             </button>
