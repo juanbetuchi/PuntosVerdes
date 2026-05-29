@@ -130,19 +130,28 @@ function HomeScreen({ onSelect, stats }: {
           </svg>
         </div>
 
-        {/* Stats animados */}
-        <div className="flex items-center gap-5 sm:gap-8 mb-8 fade-in-up" style={{ animationDelay: '0.15s' }}>
-          {[
-            { value: stats.totalPins,      label: 'puntos activos', icon: '📍' },
-            { value: stats.totalMapas,     label: 'mapas',          icon: '🗺️' },
-            { value: stats.totalMateriales,label: 'materiales',     icon: '♻️' },
-          ].map((s, i) => (
-            <div key={i} className="text-center">
-              <div className="text-2xl sm:text-3xl font-extrabold text-white tabular-nums leading-none">
-                <span className="mr-1 text-base">{s.icon}</span>
+        {/* Stats animados — glass pill */}
+        <div className="flex items-stretch bg-white/6 backdrop-blur-md border border-white/12 rounded-2xl overflow-hidden mb-8 divide-x divide-white/10 fade-in-up" style={{ animationDelay: '0.15s' }}>
+          {([
+            {
+              value: stats.totalPins, label: 'Puntos activos',
+              icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>,
+            },
+            {
+              value: stats.totalMapas, label: 'Mapas activos',
+              icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>,
+            },
+            {
+              value: stats.totalMateriales, label: 'Materiales',
+              icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg>,
+            },
+          ] as { value: number; label: string; icon: React.ReactNode }[]).map((s, i) => (
+            <div key={i} className="flex flex-col items-center px-5 sm:px-8 py-3 sm:py-4">
+              <div className="text-[#4caf50]/70 mb-1.5">{s.icon}</div>
+              <div className="text-xl sm:text-2xl font-extrabold text-white tabular-nums leading-none">
                 <AnimatedCounter target={s.value} duration={1200 + i * 200} />
               </div>
-              <div className="text-white/35 text-[10px] uppercase tracking-widest mt-1">{s.label}</div>
+              <div className="text-white/45 text-[10px] uppercase tracking-wider mt-1 whitespace-nowrap">{s.label}</div>
             </div>
           ))}
         </div>
