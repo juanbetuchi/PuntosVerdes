@@ -9,19 +9,36 @@ interface Pin {
   x: number; y: number
   titulo: string; descripcion: string
   imagenes: string[]; videoUrl: string
-  direccion: string
-  color: PinColor
+  direccion: string; color: PinColor
+  materiales: string[]; lat: number | null; lng: number | null
 }
 
 type PinColor = 'green' | 'yellow' | 'red' | 'blue'
 
-const emptyForm = { titulo: '', descripcion: '', imagenes: ['', '', ''], videoUrl: '', direccion: '', color: 'green' as PinColor }
+const emptyForm = {
+  titulo: '', descripcion: '', imagenes: ['', '', ''], videoUrl: '',
+  direccion: '', color: 'green' as PinColor,
+  materiales: [] as string[], lat: '', lng: '',
+}
 
 const PIN_COLORS: { value: PinColor; label: string; bg: string; border: string; dot: string }[] = [
-  { value: 'green',  label: 'Punto activo',   bg: 'bg-[#4caf50]/15', border: 'border-[#4caf50]',   dot: '#4caf50' },
-  { value: 'yellow', label: 'En proceso',     bg: 'bg-yellow-400/15', border: 'border-yellow-400',  dot: '#facc15' },
-  { value: 'red',    label: 'Falta cobertura', bg: 'bg-red-500/15',   border: 'border-red-400',     dot: '#f87171' },
-  { value: 'blue',   label: 'Informativo',    bg: 'bg-blue-400/15',  border: 'border-blue-400',    dot: '#60a5fa' },
+  { value: 'green',  label: 'Punto activo',    bg: 'bg-[#4caf50]/15',  border: 'border-[#4caf50]',  dot: '#4caf50' },
+  { value: 'yellow', label: 'En proceso',      bg: 'bg-yellow-400/15', border: 'border-yellow-400', dot: '#facc15' },
+  { value: 'red',    label: 'Falta cobertura', bg: 'bg-red-500/15',    border: 'border-red-400',    dot: '#f87171' },
+  { value: 'blue',   label: 'Informativo',     bg: 'bg-blue-400/15',   border: 'border-blue-400',   dot: '#60a5fa' },
+]
+
+export const MATERIALES_OPTS = [
+  { key: 'carton',       emoji: '📦', label: 'Cartón'      },
+  { key: 'vidrio',       emoji: '🍾', label: 'Vidrio'       },
+  { key: 'plastico',     emoji: '🥤', label: 'Plástico'     },
+  { key: 'electronico',  emoji: '📱', label: 'Electrónico'  },
+  { key: 'pilas',        emoji: '🪫', label: 'Pilas'        },
+  { key: 'metal',        emoji: '🔩', label: 'Metal'        },
+  { key: 'ropa',         emoji: '👕', label: 'Ropa'         },
+  { key: 'organico',     emoji: '🌱', label: 'Orgánico'     },
+  { key: 'aceite',       emoji: '🫙', label: 'Aceite'       },
+  { key: 'medicamentos', emoji: '💊', label: 'Medicamentos' },
 ]
 
 const inputClass = 'w-full bg-[#1a3a2a] border border-[#4caf50]/20 rounded-lg px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#4caf50]'
@@ -30,25 +47,32 @@ function PinForm({ values, onChange, onSubmit, onCancel, title, saving }: {
   values: typeof emptyForm; onChange: (v: typeof emptyForm) => void
   onSubmit: (e: React.FormEvent) => void; onCancel: () => void; title: string; saving: boolean
 }) {
+  const [customMat, setCustomMat] = useState('')
+
+  function addCustomMat() {
+    const mat = customMat.trim()
+    if (!mat || values.materiales.includes(mat)) { setCustomMat(''); return }
+    onChange({ ...values, materiales: [...values.materiales, mat] })
+    setCustomMat('')
+  }
+
+  const customMats = values.materiales.filter(m => !MATERIALES_OPTS.find(o => o.key === m))
+
   return (
     <form onSubmit={onSubmit} className="mt-4 bg-[#243d2e] rounded-xl p-4 border border-[#4caf50]/30 space-y-2.5">
       <h4 className="text-sm font-semibold text-[#4caf50]">{title}</h4>
       <input type="text" placeholder="Título *" value={values.titulo} onChange={e => onChange({ ...values, titulo: e.target.value })} className={inputClass} required autoFocus />
       <textarea placeholder="Descripción (opcional)" value={values.descripcion} onChange={e => onChange({ ...values, descripcion: e.target.value })} className={`${inputClass} resize-none h-16`} />
       <input type="text" placeholder="Dirección (para mini-mapa, ej: Av. San Martín 123 Laboulaye)" value={values.direccion} onChange={e => onChange({ ...values, direccion: e.target.value })} className={inputClass} />
-      {/* Selector de color */}
+
+      {/* Color del pin */}
       <div>
         <p className="text-white/40 text-xs mb-2">Color del pin</p>
         <div className="grid grid-cols-2 gap-1.5">
           {PIN_COLORS.map(c => (
-            <button
-              key={c.value}
-              type="button"
-              onClick={() => onChange({ ...values, color: c.value })}
+            <button key={c.value} type="button" onClick={() => onChange({ ...values, color: c.value })}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all ${
-                values.color === c.value
-                  ? `${c.bg} ${c.border} text-white`
-                  : 'bg-transparent border-white/10 text-white/40 hover:border-white/25'
+                values.color === c.value ? `${c.bg} ${c.border} text-white` : 'bg-transparent border-white/10 text-white/40 hover:border-white/25'
               }`}
             >
               <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: c.dot }} />
@@ -57,6 +81,56 @@ function PinForm({ values, onChange, onSubmit, onCancel, title, saving }: {
           ))}
         </div>
       </div>
+
+      {/* Materiales aceptados */}
+      <div>
+        <p className="text-white/40 text-xs mb-2">Materiales que acepta</p>
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          {MATERIALES_OPTS.map(m => {
+            const sel = values.materiales.includes(m.key)
+            return (
+              <button key={m.key} type="button"
+                onClick={() => onChange({ ...values, materiales: sel ? values.materiales.filter(x => x !== m.key) : [...values.materiales, m.key] })}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs transition-all border ${
+                  sel ? 'bg-[#4caf50]/20 border-[#4caf50]/50 text-white' : 'bg-transparent border-white/10 text-white/30 hover:border-white/25 hover:text-white/60'
+                }`}
+              >
+                <span>{m.emoji}</span><span>{m.label}</span>
+              </button>
+            )
+          })}
+        </div>
+        {customMats.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {customMats.map(m => (
+              <span key={m} className="flex items-center gap-1 bg-[#4caf50]/10 border border-[#4caf50]/25 text-white/70 text-xs px-2 py-0.5 rounded-full">
+                {m}
+                <button type="button" onClick={() => onChange({ ...values, materiales: values.materiales.filter(x => x !== m) })} className="text-white/40 hover:text-white ml-0.5">×</button>
+              </span>
+            ))}
+          </div>
+        )}
+        <div className="flex gap-1.5">
+          <input type="text" placeholder="Otro material..." value={customMat}
+            onChange={e => setCustomMat(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomMat() } }}
+            className={`${inputClass} flex-1`}
+          />
+          <button type="button" onClick={addCustomMat} className="px-3 py-2 bg-[#4caf50]/15 border border-[#4caf50]/25 text-[#4caf50] rounded-lg hover:bg-[#4caf50]/25 transition-colors">+</button>
+        </div>
+      </div>
+
+      {/* Coordenadas GPS */}
+      <div>
+        <p className="text-white/40 text-xs mb-1.5">
+          Coordenadas GPS <span className="text-white/20">(para "punto más cercano" — buscalas en Google Maps)</span>
+        </p>
+        <div className="flex gap-2">
+          <input type="number" step="any" placeholder="Latitud  ej: -34.149" value={values.lat} onChange={e => onChange({ ...values, lat: e.target.value })} className={`${inputClass} flex-1`} />
+          <input type="number" step="any" placeholder="Longitud  ej: -63.388" value={values.lng} onChange={e => onChange({ ...values, lng: e.target.value })} className={`${inputClass} flex-1`} />
+        </div>
+      </div>
+
       {[0,1,2].map(i => (
         <div key={i}>
           <p className="text-white/40 text-xs mb-1">Imagen {i+1} (opcional)</p>
@@ -188,6 +262,9 @@ export default function PinsEditor({ adminPin }: Props) {
           titulo: form.titulo, descripcion: form.descripcion,
           imagenes: form.imagenes.filter(Boolean), videoUrl: form.videoUrl,
           direccion: form.direccion, color: form.color,
+          materiales: form.materiales,
+          lat: form.lat ? parseFloat(form.lat) : null,
+          lng: form.lng ? parseFloat(form.lng) : null,
         }),
       })
       if (res.ok) {
@@ -210,6 +287,9 @@ export default function PinsEditor({ adminPin }: Props) {
       videoUrl: pin.videoUrl,
       direccion: pin.direccion ?? '',
       color: pin.color ?? 'green',
+      materiales: pin.materiales ?? [],
+      lat: pin.lat != null ? String(pin.lat) : '',
+      lng: pin.lng != null ? String(pin.lng) : '',
     })
     setNewCoords(null)
   }
@@ -228,6 +308,9 @@ export default function PinsEditor({ adminPin }: Props) {
           videoUrl: editForm.videoUrl,
           direccion: editForm.direccion,
           color: editForm.color,
+          materiales: editForm.materiales,
+          lat: editForm.lat ? parseFloat(editForm.lat) : null,
+          lng: editForm.lng ? parseFloat(editForm.lng) : null,
         }),
       })
       if (res.ok) {

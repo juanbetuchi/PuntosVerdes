@@ -10,6 +10,9 @@ export interface IPin extends Document {
   videoUrl: string
   direccion: string
   color: 'green' | 'yellow' | 'red' | 'blue'
+  materiales: string[]
+  lat: number | null
+  lng: number | null
 }
 
 const PinSchema = new Schema<IPin>({
@@ -22,6 +25,9 @@ const PinSchema = new Schema<IPin>({
   videoUrl:    { type: String, default: '' },
   direccion:   { type: String, default: '' },
   color:       { type: String, default: 'green', enum: ['green', 'yellow', 'red', 'blue'] },
+  materiales:  [{ type: String }],
+  lat:         { type: Number, default: null },
+  lng:         { type: Number, default: null },
 }, { timestamps: true })
 
 const Pin: Model<IPin> =
