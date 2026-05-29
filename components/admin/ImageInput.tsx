@@ -2,10 +2,12 @@
 import { useRef, useState } from 'react'
 
 function compressImage(file: File, maxWidth = 960, quality = 0.82): Promise<string> {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader()
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'))
     reader.onload = e => {
       const img = new Image()
+      img.onerror = () => reject(new Error('No se pudo decodificar la imagen'))
       img.onload = () => {
         let { width, height } = img
         if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth }
@@ -31,9 +33,14 @@ export default function ImageInput({ value, onChange }: { value: string; onChang
   async function handleFile(file: File) {
     if (!file.type.startsWith('image/')) return
     setProcessing(true)
-    const compressed = await compressImage(file)
-    onChange(compressed)
-    setProcessing(false)
+    try {
+      const compressed = await compressImage(file)
+      onChange(compressed)
+    } catch {
+      // imagen corrupta o no soportada — simplemente no procesar
+    } finally {
+      setProcessing(false)
+    }
   }
 
   return (

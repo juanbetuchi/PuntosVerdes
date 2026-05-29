@@ -180,22 +180,25 @@ export default function PinsEditor({ adminPin }: Props) {
     e.preventDefault()
     if (!newCoords || !form.titulo.trim()) return
     setSaving(true)
-    const res = await fetch('/api/pins', {
-      method: 'POST', headers,
-      body: JSON.stringify({
-        mapaId: selectedId, x: newCoords.x, y: newCoords.y,
-        titulo: form.titulo, descripcion: form.descripcion,
-        imagenes: form.imagenes.filter(Boolean), videoUrl: form.videoUrl,
-        direccion: form.direccion, color: form.color,
-      }),
-    })
-    if (res.ok) {
-      const pin = await res.json()
-      setPins(p => [...p, pin])
-      setNewCoords(null)
-      setToast('Pin creado')
+    try {
+      const res = await fetch('/api/pins', {
+        method: 'POST', headers,
+        body: JSON.stringify({
+          mapaId: selectedId, x: newCoords.x, y: newCoords.y,
+          titulo: form.titulo, descripcion: form.descripcion,
+          imagenes: form.imagenes.filter(Boolean), videoUrl: form.videoUrl,
+          direccion: form.direccion, color: form.color,
+        }),
+      })
+      if (res.ok) {
+        const pin = await res.json()
+        setPins(p => [...p, pin])
+        setNewCoords(null)
+        setToast('Pin creado')
+      }
+    } finally {
+      setSaving(false)
     }
-    setSaving(false)
   }
 
   function openEdit(pin: Pin) {
@@ -215,29 +218,33 @@ export default function PinsEditor({ adminPin }: Props) {
     e.preventDefault()
     if (!editingPin || !editForm.titulo.trim()) return
     setSaving(true)
-    const res = await fetch(`/api/pins/${editingPin._id}`, {
-      method: 'PUT', headers,
-      body: JSON.stringify({
-        titulo: editForm.titulo,
-        descripcion: editForm.descripcion,
-        imagenes: editForm.imagenes.filter(Boolean),
-        videoUrl: editForm.videoUrl,
-        direccion: editForm.direccion,
-        color: editForm.color,
-      }),
-    })
-    if (res.ok) {
-      const u = await res.json()
-      setPins(p => p.map(x => x._id === u._id ? u : x))
-      setEditingPin(null)
-      setToast('Pin guardado')
+    try {
+      const res = await fetch(`/api/pins/${editingPin._id}`, {
+        method: 'PUT', headers,
+        body: JSON.stringify({
+          titulo: editForm.titulo,
+          descripcion: editForm.descripcion,
+          imagenes: editForm.imagenes.filter(Boolean),
+          videoUrl: editForm.videoUrl,
+          direccion: editForm.direccion,
+          color: editForm.color,
+        }),
+      })
+      if (res.ok) {
+        const u = await res.json()
+        setPins(p => p.map(x => x._id === u._id ? u : x))
+        setEditingPin(null)
+        setToast('Pin guardado')
+      }
+    } finally {
+      setSaving(false)
     }
-    setSaving(false)
   }
 
   async function handleDelete(id: string) {
     if (!confirm('¿Eliminar este pin?')) return
-    await fetch(`/api/pins/${id}`, { method: 'DELETE', headers })
+    const res = await fetch(`/api/pins/${id}`, { method: 'DELETE', headers })
+    if (!res.ok) return
     setPins(p => p.filter(x => x._id !== id))
     if (editingPin?._id === id) setEditingPin(null)
     setToast('Pin eliminado')
@@ -283,6 +290,7 @@ export default function PinsEditor({ adminPin }: Props) {
           {pins.map(pin => {
             const isDragging = draggingId === pin._id
             const isEditing  = editingPin?._id === pin._id
+            const dotColor   = PIN_COLORS.find(c => c.value === pin.color)?.dot ?? '#4caf50'
             return (
               <div
                 key={pin._id}
@@ -291,14 +299,19 @@ export default function PinsEditor({ adminPin }: Props) {
                 onMouseDown={e => startDrag(e, pin)}
                 onTouchStart={e => startDrag(e, pin)}
               >
-                {!isDragging && <span className="absolute inset-0 rounded-full bg-[#4caf50]/30 animate-ping scale-150 pointer-events-none" />}
-                <div className={`
-                  w-6 h-6 rounded-full border-2 shadow-lg transition-all duration-100
-                  ${isDragging  ? 'scale-150 bg-yellow-400 border-yellow-200 shadow-yellow-400/50 cursor-grabbing'
-                    : isEditing ? 'scale-130 bg-amber-400 border-white cursor-grab'
-                    : editMode  ? 'bg-[#4caf50] border-white cursor-grab hover:scale-125'
-                    : 'bg-[#4caf50] border-white'}
-                `} />
+                {!isDragging && (
+                  <span className="absolute inset-0 rounded-full animate-ping scale-150 pointer-events-none"
+                    style={{ backgroundColor: `${dotColor}4d` }} />
+                )}
+                <div
+                  className={`w-6 h-6 rounded-full border-2 shadow-lg transition-all duration-100 ${
+                    isDragging  ? 'scale-150 border-yellow-200 shadow-yellow-400/50 cursor-grabbing'
+                    : isEditing ? 'scale-130 border-white cursor-grab'
+                    : editMode  ? 'border-white cursor-grab hover:scale-125'
+                    : 'border-white'
+                  }`}
+                  style={{ backgroundColor: isDragging ? '#facc15' : isEditing ? '#f59e0b' : dotColor }}
+                />
                 {isDragging && (
                   <div className="absolute left-1/2 -translate-x-1/2 -top-8 bg-[#0d2318]/95 border border-yellow-400/50 rounded-lg px-2.5 py-1 text-yellow-300 text-[10px] whitespace-nowrap pointer-events-none shadow-xl">
                     {pin.titulo}
