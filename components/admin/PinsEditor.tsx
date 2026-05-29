@@ -10,9 +10,19 @@ interface Pin {
   titulo: string; descripcion: string
   imagenes: string[]; videoUrl: string
   direccion: string
+  color: PinColor
 }
 
-const emptyForm = { titulo: '', descripcion: '', imagenes: ['', '', ''], videoUrl: '', direccion: '' }
+type PinColor = 'green' | 'yellow' | 'red' | 'blue'
+
+const emptyForm = { titulo: '', descripcion: '', imagenes: ['', '', ''], videoUrl: '', direccion: '', color: 'green' as PinColor }
+
+const PIN_COLORS: { value: PinColor; label: string; bg: string; border: string; dot: string }[] = [
+  { value: 'green',  label: 'Punto activo',   bg: 'bg-[#4caf50]/15', border: 'border-[#4caf50]',   dot: '#4caf50' },
+  { value: 'yellow', label: 'En proceso',     bg: 'bg-yellow-400/15', border: 'border-yellow-400',  dot: '#facc15' },
+  { value: 'red',    label: 'Falta cobertura', bg: 'bg-red-500/15',   border: 'border-red-400',     dot: '#f87171' },
+  { value: 'blue',   label: 'Informativo',    bg: 'bg-blue-400/15',  border: 'border-blue-400',    dot: '#60a5fa' },
+]
 
 const inputClass = 'w-full bg-[#1a3a2a] border border-[#4caf50]/20 rounded-lg px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#4caf50]'
 
@@ -26,6 +36,27 @@ function PinForm({ values, onChange, onSubmit, onCancel, title, saving }: {
       <input type="text" placeholder="Título *" value={values.titulo} onChange={e => onChange({ ...values, titulo: e.target.value })} className={inputClass} required autoFocus />
       <textarea placeholder="Descripción (opcional)" value={values.descripcion} onChange={e => onChange({ ...values, descripcion: e.target.value })} className={`${inputClass} resize-none h-16`} />
       <input type="text" placeholder="Dirección (para mini-mapa, ej: Av. San Martín 123 Laboulaye)" value={values.direccion} onChange={e => onChange({ ...values, direccion: e.target.value })} className={inputClass} />
+      {/* Selector de color */}
+      <div>
+        <p className="text-white/40 text-xs mb-2">Color del pin</p>
+        <div className="grid grid-cols-2 gap-1.5">
+          {PIN_COLORS.map(c => (
+            <button
+              key={c.value}
+              type="button"
+              onClick={() => onChange({ ...values, color: c.value })}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all ${
+                values.color === c.value
+                  ? `${c.bg} ${c.border} text-white`
+                  : 'bg-transparent border-white/10 text-white/40 hover:border-white/25'
+              }`}
+            >
+              <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: c.dot }} />
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
       {[0,1,2].map(i => (
         <div key={i}>
           <p className="text-white/40 text-xs mb-1">Imagen {i+1} (opcional)</p>
@@ -155,7 +186,7 @@ export default function PinsEditor({ adminPin }: Props) {
         mapaId: selectedId, x: newCoords.x, y: newCoords.y,
         titulo: form.titulo, descripcion: form.descripcion,
         imagenes: form.imagenes.filter(Boolean), videoUrl: form.videoUrl,
-        direccion: form.direccion,
+        direccion: form.direccion, color: form.color,
       }),
     })
     if (res.ok) {
@@ -175,6 +206,7 @@ export default function PinsEditor({ adminPin }: Props) {
       imagenes: [...pin.imagenes, '', '', ''].slice(0, 3),
       videoUrl: pin.videoUrl,
       direccion: pin.direccion ?? '',
+      color: pin.color ?? 'green',
     })
     setNewCoords(null)
   }
@@ -191,6 +223,7 @@ export default function PinsEditor({ adminPin }: Props) {
         imagenes: editForm.imagenes.filter(Boolean),
         videoUrl: editForm.videoUrl,
         direccion: editForm.direccion,
+        color: editForm.color,
       }),
     })
     if (res.ok) {

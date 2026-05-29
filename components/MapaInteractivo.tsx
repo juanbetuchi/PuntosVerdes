@@ -1,7 +1,16 @@
 'use client'
 import { useState, useRef } from 'react'
 
-interface Pin { _id: string; x: number; y: number; titulo: string; descripcion: string; imagenes: string[]; videoUrl: string; direccion?: string }
+type PinColor = 'green' | 'yellow' | 'red' | 'blue'
+
+const PIN_PALETTE: Record<PinColor, { fill: string; stroke: string; glow: string; ripple: string }> = {
+  green:  { fill: 'rgba(26,58,42,0.88)',   stroke: '#4caf50', glow: 'rgba(76,175,80,0.9)',   ripple: '#4caf50' },
+  yellow: { fill: 'rgba(60,50,10,0.88)',   stroke: '#facc15', glow: 'rgba(250,204,21,0.9)',  ripple: '#facc15' },
+  red:    { fill: 'rgba(60,15,15,0.88)',   stroke: '#f87171', glow: 'rgba(248,113,113,0.9)', ripple: '#f87171' },
+  blue:   { fill: 'rgba(15,35,60,0.88)',   stroke: '#60a5fa', glow: 'rgba(96,165,250,0.9)',  ripple: '#60a5fa' },
+}
+
+interface Pin { _id: string; x: number; y: number; titulo: string; descripcion: string; imagenes: string[]; videoUrl: string; direccion?: string; color?: PinColor }
 interface Mapa { _id: string; nombre: string; descripcion: string; imageUrl: string }
 
 function getEmbedUrl(url: string) {
@@ -135,6 +144,7 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
         {pins.map((pin, idx) => {
           const isActive  = activePin?._id === pin._id
           const isHovered = hoveredId === pin._id
+          const pal = PIN_PALETTE[pin.color ?? 'green']
           return (
             <button
               key={pin._id}
@@ -155,9 +165,9 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
               {/* Ondas múltiples */}
               {!isActive && (
                 <>
-                  <span className="ripple1 absolute left-1/2 top-1/2 w-5 h-5 rounded-full bg-[#4caf50]/35 pointer-events-none" />
-                  <span className="ripple2 absolute left-1/2 top-1/2 w-5 h-5 rounded-full bg-[#4caf50]/25 pointer-events-none" />
-                  <span className="ripple3 absolute left-1/2 top-1/2 w-5 h-5 rounded-full bg-[#4caf50]/15 pointer-events-none" />
+                  <span className="ripple1 absolute left-1/2 top-1/2 w-5 h-5 rounded-full pointer-events-none" style={{ background: `${pal.ripple}55` }} />
+                  <span className="ripple2 absolute left-1/2 top-1/2 w-5 h-5 rounded-full pointer-events-none" style={{ background: `${pal.ripple}40` }} />
+                  <span className="ripple3 absolute left-1/2 top-1/2 w-5 h-5 rounded-full pointer-events-none" style={{ background: `${pal.ripple}25` }} />
                 </>
               )}
 
@@ -165,16 +175,17 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
               <svg
                 width="26" height="26" viewBox="0 0 30 30"
                 className={`drop-shadow-xl transition-all duration-200 ${
-                  isActive   ? 'scale-130 drop-shadow-[0_0_12px_rgba(76,175,80,0.9)]'
-                  : isHovered ? 'scale-125 drop-shadow-[0_0_14px_rgba(76,175,80,1)]'
+                  isActive   ? 'scale-130'
+                  : isHovered ? 'scale-125'
                   : 'group-hover:scale-115'
                 }`}
+                style={isActive ? { filter: `drop-shadow(0 0 12px ${pal.glow})` } : isHovered ? { filter: `drop-shadow(0 0 14px ${pal.glow})` } : {}}
               >
-                <circle cx="15" cy="15" r="13" fill={isActive ? 'rgba(76,175,80,0.9)' : isHovered ? 'rgba(76,175,80,0.5)' : 'rgba(26,58,42,0.88)'} />
-                <circle cx="15" cy="15" r="13" fill="none" stroke={isActive || isHovered ? '#c8e6c9' : '#4caf50'} strokeWidth={isHovered ? '2' : '1.2'} />
+                <circle cx="15" cy="15" r="13" fill={isActive ? pal.glow : isHovered ? pal.stroke + '80' : pal.fill} />
+                <circle cx="15" cy="15" r="13" fill="none" stroke={isActive || isHovered ? 'white' : pal.stroke} strokeWidth={isHovered ? '2' : '1.2'} />
                 <g transform="translate(9,8) scale(0.5)">
                   <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"
-                    fill={isActive || isHovered ? 'white' : '#81c784'} />
+                    fill={isActive || isHovered ? 'white' : pal.stroke} />
                 </g>
               </svg>
 
