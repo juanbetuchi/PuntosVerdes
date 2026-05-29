@@ -155,15 +155,15 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
               {/* Ondas múltiples */}
               {!isActive && (
                 <>
-                  <span className="ripple1 absolute left-1/2 top-1/2 w-7 h-7 rounded-full bg-[#4caf50]/35 pointer-events-none" />
-                  <span className="ripple2 absolute left-1/2 top-1/2 w-7 h-7 rounded-full bg-[#4caf50]/25 pointer-events-none" />
-                  <span className="ripple3 absolute left-1/2 top-1/2 w-7 h-7 rounded-full bg-[#4caf50]/15 pointer-events-none" />
+                  <span className="ripple1 absolute left-1/2 top-1/2 w-5 h-5 rounded-full bg-[#4caf50]/35 pointer-events-none" />
+                  <span className="ripple2 absolute left-1/2 top-1/2 w-5 h-5 rounded-full bg-[#4caf50]/25 pointer-events-none" />
+                  <span className="ripple3 absolute left-1/2 top-1/2 w-5 h-5 rounded-full bg-[#4caf50]/15 pointer-events-none" />
                 </>
               )}
 
               {/* Pin SVG */}
               <svg
-                width="34" height="34" viewBox="0 0 30 30"
+                width="26" height="26" viewBox="0 0 30 30"
                 className={`drop-shadow-xl transition-all duration-200 ${
                   isActive   ? 'scale-130 drop-shadow-[0_0_12px_rgba(76,175,80,0.9)]'
                   : isHovered ? 'scale-125 drop-shadow-[0_0_14px_rgba(76,175,80,1)]'
