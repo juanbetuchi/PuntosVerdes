@@ -72,16 +72,33 @@ export default function TopNav({ categoria, onCategoriaChange, onHome }: TopNavP
                   onClick={() => onCategoriaChange(key)}
                   className={`
                     nav-wind-btn
-                    relative flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider transition-all duration-200 group rounded-full overflow-visible
+                    relative flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider group rounded-lg overflow-visible
                     ${categoria === key
                       ? 'text-white bg-[#4caf50]/15 border border-[#4caf50]/40'
                       : 'text-white/75 border border-[#4caf50]/20'}
                   `}
                 >
-                  {/* Hojas decorativas */}
-                  <svg className="nw-leaf-1" viewBox="0 0 24 24" fill="#a5d6a7"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/></svg>
-                  <svg className="nw-leaf-2" viewBox="0 0 24 24" fill="#c8e6c9"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/></svg>
-                  <svg className="nw-leaf-3" viewBox="0 0 24 24" fill="#81c784"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/></svg>
+                  {/* 5 hojas que flotan hacia arriba al hover */}
+                  <svg className="nw-icon nw-icon-1" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C9 8 6 16 6 24c3-4 6-6 10-7-1 4-2 8 0 13 2-5 4-9 4-13 4 1 7 3 10 7 0-8-3-16-14-22z" fill="#7B9B3A"/>
+                    <path d="M16 10c-2 3-3 7-3 12h1c0-4 1-8 2-12z" fill="#556729" fillRule="nonzero"/>
+                  </svg>
+                  <svg className="nw-icon nw-icon-2" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C9 8 6 16 6 24c3-4 6-6 10-7-1 4-2 8 0 13 2-5 4-9 4-13 4 1 7 3 10 7 0-8-3-16-14-22z" fill="#556729"/>
+                    <path d="M16 10c-2 3-3 7-3 12h1c0-4 1-8 2-12z" fill="#3C4819" fillRule="nonzero"/>
+                  </svg>
+                  <svg className="nw-icon nw-icon-3" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C9 8 6 16 6 24c3-4 6-6 10-7-1 4-2 8 0 13 2-5 4-9 4-13 4 1 7 3 10 7 0-8-3-16-14-22z" fill="#7B9B3A"/>
+                    <path d="M16 10c-2 3-3 7-3 12h1c0-4 1-8 2-12z" fill="#556729"/>
+                  </svg>
+                  <svg className="nw-icon nw-icon-4" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C9 8 6 16 6 24c3-4 6-6 10-7-1 4-2 8 0 13 2-5 4-9 4-13 4 1 7 3 10 7 0-8-3-16-14-22z" fill="#3C4819"/>
+                    <path d="M16 10c-2 3-3 7-3 12h1c0-4 1-8 2-12z" fill="#556729"/>
+                  </svg>
+                  <svg className="nw-icon nw-icon-5" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C9 8 6 16 6 24c3-4 6-6 10-7-1 4-2 8 0 13 2-5 4-9 4-13 4 1 7 3 10 7 0-8-3-16-14-22z" fill="#3C4819"/>
+                    <path d="M16 10c-2 3-3 7-3 12h1c0-4 1-8 2-12z" fill="#556729"/>
+                  </svg>
                   {/* Línea inferior activo */}
                   {categoria === key && (
                     <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] rounded-full bg-[#4caf50]/70" />
