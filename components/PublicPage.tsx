@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TopNav from './TopNav'
 import HeroCarousel from './HeroCarousel'
 import MapaInteractivo from './MapaInteractivo'
@@ -17,15 +17,31 @@ interface Mapa {
   activo: boolean
 }
 interface Pin {
-  _id: string
-  mapaId: string
+  _id: string; mapaId: string
   x: number; y: number
   titulo: string; descripcion: string
   imagenes: string[]; videoUrl: string
+  materiales?: string[]
 }
 interface PublicPageProps {
   mapas: Mapa[]
   pinsMap: Record<string, Pin[]>
+}
+
+function AnimatedCounter({ target, duration = 1400 }: { target: number; duration?: number }) {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (target === 0) return
+    const start = performance.now()
+    function tick(now: number) {
+      const p = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setCount(Math.round(eased * target))
+      if (p < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [target, duration])
+  return <>{count}</>
 }
 
 /* ─── Partículas flotantes del hero ─── */
@@ -63,7 +79,10 @@ const homeCards = [
 ]
 
 /* ─── Pantalla principal (home) ─── */
-function HomeScreen({ onSelect }: { onSelect: (c: 'local' | 'provincial') => void }) {
+function HomeScreen({ onSelect, stats }: {
+  onSelect: (c: 'local' | 'provincial') => void
+  stats: { totalPins: number; totalMapas: number; totalMateriales: number }
+}) {
   return (
     <div className="relative w-full h-screen overflow-hidden">
 
@@ -111,7 +130,24 @@ function HomeScreen({ onSelect }: { onSelect: (c: 'local' | 'provincial') => voi
           </svg>
         </div>
 
-        <p className="text-white/40 text-sm mb-10 tracking-wide">
+        {/* Stats animados */}
+        <div className="flex items-center gap-5 sm:gap-8 mb-8 fade-in-up" style={{ animationDelay: '0.15s' }}>
+          {[
+            { value: stats.totalPins,      label: 'puntos activos', icon: '📍' },
+            { value: stats.totalMapas,     label: 'mapas',          icon: '🗺️' },
+            { value: stats.totalMateriales,label: 'materiales',     icon: '♻️' },
+          ].map((s, i) => (
+            <div key={i} className="text-center">
+              <div className="text-2xl sm:text-3xl font-extrabold text-white tabular-nums leading-none">
+                <span className="mr-1 text-base">{s.icon}</span>
+                <AnimatedCounter target={s.value} duration={1200 + i * 200} />
+              </div>
+              <div className="text-white/35 text-[10px] uppercase tracking-widest mt-1">{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-white/40 text-sm mb-8 tracking-wide">
           Seleccioná una categoría para explorar el mapa
         </p>
 
@@ -217,6 +253,13 @@ export default function PublicPage({ mapas, pinsMap }: PublicPageProps) {
   const [categoria, setCategoria] = useState<'local' | 'provincial' | null>(null)
   const filtered = categoria ? mapas.filter(m => m.categoria === categoria) : []
 
+  const allPins = Object.values(pinsMap).flat()
+  const stats = {
+    totalPins:       allPins.length,
+    totalMapas:      mapas.length,
+    totalMateriales: new Set(allPins.flatMap(p => p.materiales ?? [])).size || 10,
+  }
+
   return (
     <div className="min-h-screen">
 
@@ -231,7 +274,7 @@ export default function PublicPage({ mapas, pinsMap }: PublicPageProps) {
       <main>
 
         {/* HOME — pantalla completa, la nav se superpone encima */}
-        {categoria === null && <HomeScreen onSelect={setCategoria} />}
+        {categoria === null && <HomeScreen onSelect={setCategoria} stats={stats} />}
 
         {/* CATEGORÍA — empieza debajo de la nav */}
         {categoria !== null && (
