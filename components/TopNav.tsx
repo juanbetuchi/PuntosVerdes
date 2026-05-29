@@ -65,18 +65,23 @@ export default function TopNav({ categoria, onCategoriaChange, onHome }: TopNavP
             </button>
 
             {/* Nav items — desktop */}
-            <div className="hidden md:flex items-center gap-0.5 flex-1 justify-center">
+            <div className="hidden md:flex items-center gap-1 flex-1 justify-center">
               {navItems.map(({ key, label, icon }) => (
                 <button
                   key={key}
                   onClick={() => onCategoriaChange(key)}
                   className={`
-                    relative flex items-center gap-2 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider transition-all duration-200 group rounded-lg
+                    nav-wind-btn
+                    relative flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider transition-all duration-200 group rounded-full overflow-visible
                     ${categoria === key
-                      ? 'text-white bg-white/8 border border-white/10'
-                      : 'text-white/75 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10'}
+                      ? 'text-white bg-[#4caf50]/15 border border-[#4caf50]/40'
+                      : 'text-white/75 border border-[#4caf50]/20'}
                   `}
                 >
+                  {/* Hojas decorativas */}
+                  <svg className="nw-leaf-1" viewBox="0 0 24 24" fill="#a5d6a7"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/></svg>
+                  <svg className="nw-leaf-2" viewBox="0 0 24 24" fill="#c8e6c9"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/></svg>
+                  <svg className="nw-leaf-3" viewBox="0 0 24 24" fill="#81c784"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/></svg>
                   {/* Línea inferior activo */}
                   {categoria === key && (
                     <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] rounded-full bg-[#4caf50]/70" />
