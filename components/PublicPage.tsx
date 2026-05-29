@@ -121,21 +121,22 @@ function HomeScreen({ onSelect }: { onSelect: (c: 'local' | 'provincial') => voi
             <button
               key={card.key}
               onClick={() => onSelect(card.key)}
-              className="home-card-leaves glass-card card-leaf-mobile sm:rounded-2xl p-4 sm:p-7 text-left sm:text-left flex flex-col items-center sm:items-start gap-3 sm:gap-4 group fade-in-up"
+              className="home-card-leaves relative glass-card card-leaf-mobile sm:rounded-2xl p-4 sm:p-7 text-left sm:text-left flex flex-col items-center sm:items-start gap-3 sm:gap-4 group fade-in-up"
               style={{ animationDelay: `${i * 0.1}s` }}
             >
-              {/* 5 hojas que vuelan hacia arriba al hover */}
+              {/* Planta que crece desde la base al hover */}
               {[
-                { cls: 'hcl hcl-1', fill: '#7B9B3A' },
-                { cls: 'hcl hcl-2', fill: '#556729' },
-                { cls: 'hcl hcl-3', fill: '#7B9B3A' },
-                { cls: 'hcl hcl-4', fill: '#3C4819' },
-                { cls: 'hcl hcl-5', fill: '#3C4819' },
-              ].map(({ cls, fill }, idx) => (
-                <svg key={idx} className={cls} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M16 2C9 8 6 16 6 24c3-4 6-6 10-7-1 4-2 8 0 13 2-5 4-9 4-13 4 1 7 3 10 7 0-8-3-16-14-22z" fill={fill}/>
-                  <path d="M16 10c-2 3-3 7-3 12h1c0-4 1-8 2-12z" fill="#2a3510" fillRule="nonzero"/>
-                </svg>
+                { rot: '0deg',   left: 'calc(50% - 25px)', w: 50, fill: '#556729', delay: '0s'     },
+                { rot: '20deg',  left: 'calc(57% - 27px)', w: 54, fill: '#7B9B3A', delay: '0.08s'  },
+                { rot: '-20deg', left: 'calc(43% - 27px)', w: 54, fill: '#7B9B3A', delay: '0.08s'  },
+                { rot: '44deg',  left: 'calc(65% - 30px)', w: 62, fill: '#3C4819', delay: '0.18s'  },
+                { rot: '-44deg', left: 'calc(35% - 30px)', w: 62, fill: '#3C4819', delay: '0.18s'  },
+              ].map(({ rot, left, w, fill, delay }, idx) => (
+                <span key={idx} className="hcl-stem" style={{ left, transform: `rotate(${rot})` }}>
+                  <svg className="hcl-leaf" style={{ width: w, height: 'auto', transitionDelay: delay }} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z" fill={fill}/>
+                  </svg>
+                </span>
               ))}
               <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center bg-white/10 border border-white/14 group-hover:bg-white/17 transition-colors shadow-inner">
                 <div className="w-6 h-6 sm:w-9 sm:h-9 [&>svg]:w-full [&>svg]:h-full">{card.icon}</div>
