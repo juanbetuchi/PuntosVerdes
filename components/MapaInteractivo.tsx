@@ -49,6 +49,7 @@ const BURST_EMOJIS = ['🌿', '♻️', '🌱', '✨', '🍃', '💚']
 
 export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[] }) {
   const [activePin, setActivePin]       = useState<Pin | null>(null)
+  const [previewPin, setPreviewPin]     = useState<Pin | null>(null)
   const [hoveredId, setHoveredId]       = useState<string | null>(null)
   const [bursts, setBursts]             = useState<Burst[]>([])
   const [nearestId, setNearestId]       = useState<string | null>(null)
@@ -57,6 +58,7 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
   const [selectedMats, setSelectedMats] = useState<string[]>([])
   const [imgIdx, setImgIdx]             = useState(0)
   const touchStartX                     = useRef(0)
+  const isTouchRef                      = useRef(false)
   const containerRef                    = useRef<HTMLDivElement>(null)
 
   useEffect(() => setImgIdx(0), [activePin?._id])
@@ -276,9 +278,15 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
                 animationDelay: `${idx * 0.08}s`,
                 opacity: matches ? 1 : 0.12,
               }}
+              onTouchStart={() => { isTouchRef.current = true }}
               onClick={() => {
                 triggerBurst(pin)
-                setActivePin(isActive ? null : pin)
+                if (isTouchRef.current) {
+                  isTouchRef.current = false
+                  setPreviewPin(previewPin?._id === pin._id ? null : pin)
+                } else {
+                  setActivePin(isActive ? null : pin)
+                }
               }}
               onMouseEnter={() => setHoveredId(pin._id)}
               onMouseLeave={() => setHoveredId(null)}
@@ -400,6 +408,68 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
           )
         })}
       </div>
+
+      {/* Preview popup — mobile tap */}
+      {previewPin && (() => {
+        const pal = PIN_PALETTE[previewPin.color ?? 'green']
+        const validImages = (previewPin.imagenes ?? []).filter(Boolean)
+        return (
+          <div
+            className="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-3 sm:p-4"
+            onClick={() => setPreviewPin(null)}
+          >
+            <div
+              className="bg-[#0d2318]/97 backdrop-blur-xl border border-[#4caf50]/20 rounded-2xl w-full max-w-sm shadow-[0_0_60px_rgba(76,175,80,0.12)] overflow-hidden"
+              style={{ boxShadow: `0 0 40px rgba(76,175,80,0.08), 0 -4px 30px rgba(0,0,0,0.6)` }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="h-px bg-gradient-to-r from-transparent via-[#4caf50]/40 to-transparent" />
+              {validImages[0] && (
+                <div className="w-full h-44 overflow-hidden">
+                  <img src={validImages[0]} alt="" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: pal.stroke }} />
+                    <h4 className="text-white font-bold text-base leading-tight">{previewPin.titulo}</h4>
+                  </div>
+                  <button
+                    onClick={() => setPreviewPin(null)}
+                    className="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white/80 transition-colors flex-shrink-0 text-sm"
+                  >✕</button>
+                </div>
+                {previewPin.descripcion && (
+                  <p className="text-white/60 text-sm leading-relaxed mb-3 line-clamp-3">{previewPin.descripcion}</p>
+                )}
+                {previewPin.materiales && previewPin.materiales.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {previewPin.materiales.slice(0, 5).map(mat => {
+                      const opt = MATERIALES_OPTS.find(o => o.key === mat)
+                      return (
+                        <span key={mat} className="text-xs bg-[#4caf50]/15 border border-[#4caf50]/20 text-white/75 px-2 py-0.5 rounded-full">
+                          {opt ? `${opt.emoji} ${opt.label}` : mat}
+                        </span>
+                      )
+                    })}
+                    {previewPin.materiales.length > 5 && (
+                      <span className="text-xs text-white/35">+{previewPin.materiales.length - 5}</span>
+                    )}
+                  </div>
+                )}
+                <button
+                  onClick={() => { setPreviewPin(null); setActivePin(previewPin) }}
+                  className="w-full py-3 rounded-xl text-sm font-semibold tracking-wide transition-all active:scale-95"
+                  style={{ background: `${pal.stroke}25`, color: pal.stroke, border: `1px solid ${pal.stroke}40` }}
+                >
+                  Ver más información
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Modal */}
       {activePin && (
