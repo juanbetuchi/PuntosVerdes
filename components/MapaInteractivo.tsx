@@ -211,35 +211,37 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
       {/* Card imagen */}
       <div
         ref={containerRef}
-        className="relative w-full rounded-2xl overflow-hidden border border-white/6 shadow-[0_4px_24px_rgba(0,0,0,0.5)] card-glow bg-[#071410]"
+        className="relative w-full rounded-2xl border border-white/6 shadow-[0_4px_24px_rgba(0,0,0,0.5)] card-glow bg-[#071410]"
       >
         {/* Esquinas decorativas */}
         {['top-0 left-0 border-t border-l rounded-tl-2xl','top-0 right-0 border-t border-r rounded-tr-2xl','bottom-0 left-0 border-b border-l rounded-bl-2xl','bottom-0 right-0 border-b border-r rounded-br-2xl'].map((cls, i) => (
           <div key={i} className={`absolute w-6 h-6 ${cls} border-[#4caf50]/25 z-10 pointer-events-none`} />
         ))}
 
-        <img
-          src={mapa.imageUrl}
-          alt={mapa.nombre}
-          className="w-full block map-breath"
-          style={{
-            transition: 'transform 0.75s cubic-bezier(0.25,0.46,0.45,0.94)',
-            transform: hovPin ? 'scale(1.07)' : 'scale(1)',
-            transformOrigin: hovPin ? `${hovPin.x}% ${hovPin.y}%` : 'center',
-          }}
-        />
-
-        {/* Spotlight: oscurece el fondo lejos del pin hover */}
-        <div
-          className="absolute inset-0 pointer-events-none z-[5]"
-          style={{
-            transition: 'opacity 0.5s ease',
-            opacity: hovPin ? 1 : 0,
-            background: hovPin
-              ? `radial-gradient(circle 28% at ${hovPin.x}% ${hovPin.y}%, transparent 0%, rgba(0,0,0,0.38) 100%)`
-              : 'none',
-          }}
-        />
+        {/* Wrapper imagen — overflow-hidden aquí para que las cards no se corten */}
+        <div className="relative rounded-2xl overflow-hidden">
+          <img
+            src={mapa.imageUrl}
+            alt={mapa.nombre}
+            className="w-full block map-breath"
+            style={{
+              transition: 'transform 0.75s cubic-bezier(0.25,0.46,0.45,0.94)',
+              transform: hovPin ? 'scale(1.07)' : 'scale(1)',
+              transformOrigin: hovPin ? `${hovPin.x}% ${hovPin.y}%` : 'center',
+            }}
+          />
+          {/* Spotlight: oscurece el fondo lejos del pin hover */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              transition: 'opacity 0.5s ease',
+              opacity: hovPin ? 1 : 0,
+              background: hovPin
+                ? `radial-gradient(circle 28% at ${hovPin.x}% ${hovPin.y}%, transparent 0%, rgba(0,0,0,0.38) 100%)`
+                : 'none',
+            }}
+          />
+        </div>
 
         {/* ── SVG overlay: líneas conectoras ── */}
         {hovPin && (
@@ -362,72 +364,81 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
                            : alignRight ? 'right-0'
                            : 'left-1/2 -translate-x-1/2'
                 return (
-                <div className={`hidden group-hover:flex absolute ${vCls} ${hCls} flex-col ${showBelow ? '' : 'items-center'} pointer-events-none z-30 w-56`}
+                <div className={`hidden group-hover:flex absolute ${vCls} ${hCls} flex-col pointer-events-none z-30 w-64`}
                   style={{ flexDirection: showBelow ? 'column-reverse' : 'column' }}>
-                  <div className="border border-[#4caf50]/20 rounded-2xl overflow-hidden w-full text-left"
-                    style={{ background: '#0d2318', boxShadow: '0 8px 40px rgba(0,0,0,0.85), 0 0 24px rgba(76,175,80,0.1)' }}>
+
+                  {/* Triángulo */}
+                  <div
+                    className={`w-3 h-3 rotate-45 self-center flex-shrink-0 ${showBelow ? '-mb-[7px] order-first' : '-mt-[7px]'}`}
+                    style={{ background: 'linear-gradient(135deg,#0f2e1a,#071b10)', border: `1px solid ${pal.stroke}30` }}
+                  />
+
+                  {/* Card */}
+                  <div className="rounded-2xl overflow-hidden w-full text-left"
+                    style={{ background:'linear-gradient(145deg,#0f2e1a 0%,#071b10 100%)', boxShadow:`0 16px 56px rgba(0,0,0,0.92),0 0 0 1px ${pal.stroke}28,0 0 40px ${pal.stroke}10` }}>
+
+                    {/* Línea de acento superior */}
+                    <div className="h-[2px]" style={{ background:`linear-gradient(90deg,transparent,${pal.stroke},transparent)` }} />
+
+                    {/* Imagen con gradiente sobre ella */}
                     {validImages[0] && (
-                      <div className="w-full h-28 overflow-hidden">
-                        <img src={validImages[0]} alt="" className="w-full h-full object-cover"
-                          onError={e => { (e.currentTarget.parentElement as HTMLElement).style.display = 'none' }} />
+                      <div className="relative w-full h-32 overflow-hidden">
+                        <img src={validImages[0]} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          onError={e => { (e.currentTarget.parentElement as HTMLElement).style.display='none' }} />
+                        <div className="absolute inset-0" style={{ background:'linear-gradient(to top,rgba(7,27,16,0.92) 0%,rgba(7,27,16,0.2) 55%,transparent 100%)' }} />
+                        <div className="absolute bottom-2.5 left-3 right-3">
+                          <p className="text-white text-xs font-bold leading-snug drop-shadow-lg">{pin.titulo}</p>
+                        </div>
                       </div>
                     )}
+
                     <div className="p-3">
-                      <div className="flex items-start gap-2 mb-1">
-                        <span className="w-2 h-2 rounded-full flex-shrink-0 mt-1" style={{ background: pal.stroke }} />
-                        <p className="text-white text-xs font-bold leading-snug">{pin.titulo}</p>
-                      </div>
-                      {pin.descripcion && (
-                        <p className="text-white/65 text-[11px] mt-1 line-clamp-2 leading-relaxed pl-4">{pin.descripcion}</p>
+                      {/* Título (solo si no hay imagen) */}
+                      {!validImages[0] && (
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background:`${pal.stroke}20`, border:`1px solid ${pal.stroke}30` }}>
+                            <svg viewBox="0 0 24 24" fill={pal.stroke} className="w-3.5 h-3.5"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/></svg>
+                          </div>
+                          <p className="text-white text-xs font-bold leading-snug">{pin.titulo}</p>
+                        </div>
                       )}
+
+                      {pin.descripcion && (
+                        <p className="text-white/55 text-[11px] leading-relaxed line-clamp-2 mb-2">{pin.descripcion}</p>
+                      )}
+
                       {pin.materiales && pin.materiales.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2 pl-4">
-                          {pin.materiales.slice(0, 4).map(mat => {
+                        <div className="flex flex-wrap gap-1 mb-2.5">
+                          {pin.materiales.slice(0, 3).map(mat => {
                             const opt = MATERIALES_OPTS.find(o => o.key === mat)
                             return (
-                              <span key={mat} className="text-[10px] bg-[#4caf50]/15 border border-[#4caf50]/20 text-white/75 px-1.5 py-0.5 rounded-full">
+                              <span key={mat} className="text-[10px] px-1.5 py-0.5 rounded-full"
+                                style={{ background:`${pal.stroke}18`, color:pal.stroke, border:`1px solid ${pal.stroke}28` }}>
                                 {opt ? `${opt.emoji} ${opt.label}` : mat}
                               </span>
                             )
                           })}
-                          {pin.materiales.length > 4 && <span className="text-[10px] text-white/40">+{pin.materiales.length - 4}</span>}
+                          {pin.materiales.length > 3 && <span className="text-[10px] text-white/30 self-center">+{pin.materiales.length - 3}</span>}
                         </div>
                       )}
-                      <div className="flex items-center gap-2.5 mt-2 pt-2 border-t border-white/8">
-                        {validImages.length > 1 && (
-                          <span className="flex items-center gap-1 text-[10px] text-white/50">
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                            {validImages.length}
-                          </span>
-                        )}
-                        {pin.videoUrl && (
-                          <span className="flex items-center gap-1 text-[10px] text-white/50">
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M8 5v14l11-7z"/></svg>
-                            Video
-                          </span>
-                        )}
-                        {pin.audioUrl && (
-                          <span className="flex items-center gap-1 text-[10px] text-white/50">
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M9 18V5l12-2v13"/></svg>
-                            Audio
-                          </span>
-                        )}
-                        {pin.direccion && (
-                          <span className="flex items-center gap-1 text-[10px] text-white/50">
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-                            Mapa
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-2 py-1.5 rounded-lg text-center text-[10px] font-semibold tracking-wide"
-                        style={{ background: `${pal.stroke}22`, color: pal.stroke, border: `1px solid ${pal.stroke}33` }}>
+
+                      {/* Íconos de contenido */}
+                      {(validImages.length > 1 || pin.videoUrl || pin.audioUrl || pin.direccion) && (
+                        <div className="flex items-center gap-3 mb-2.5 pb-2.5" style={{ borderBottom:`1px solid ${pal.stroke}12` }}>
+                          {validImages.length > 1 && <span className="text-[10px] text-white/35">📸 {validImages.length}</span>}
+                          {pin.videoUrl && <span className="text-[10px] text-white/35">▶ Video</span>}
+                          {pin.audioUrl && <span className="text-[10px] text-white/35">🎵 Audio</span>}
+                          {pin.direccion && <span className="text-[10px] text-white/35">📍 Mapa</span>}
+                        </div>
+                      )}
+
+                      {/* CTA */}
+                      <div className="py-2 rounded-xl text-center text-[10px] font-bold tracking-widest uppercase"
+                        style={{ background:`${pal.stroke}18`, color:pal.stroke, border:`1px solid ${pal.stroke}35` }}>
                         Presioná para más info
                       </div>
                     </div>
                   </div>
-                  {/* Triángulo apuntando al pin — arriba si card está abajo, abajo si card está arriba */}
-                  <div className={`w-2.5 h-2.5 border-[#4caf50]/20 rotate-45 self-center ${showBelow ? 'border-t border-l -mb-1.5 order-first' : 'border-b border-r -mt-1.5'}`}
-                    style={{ background: '#0d2318' }} />
                 </div>
                 )
               })()}
