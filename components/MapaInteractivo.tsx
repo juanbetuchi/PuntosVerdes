@@ -26,7 +26,7 @@ const MATERIALES_OPTS = [
 interface Pin {
   _id: string; x: number; y: number
   titulo: string; descripcion: string
-  imagenes: string[]; videoUrl: string
+  imagenes: string[]; videoUrl: string; audioUrl?: string
   direccion?: string; color?: PinColor
   materiales?: string[]; lat?: number | null; lng?: number | null
 }
@@ -365,6 +365,12 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
                             Video
                           </span>
                         )}
+                        {pin.audioUrl && (
+                          <span className="flex items-center gap-1 text-[10px] text-white/35">
+                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                            Audio
+                          </span>
+                        )}
                         {pin.direccion && (
                           <span className="flex items-center gap-1 text-[10px] text-white/35">
                             <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
@@ -434,6 +440,19 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
                     ? <iframe src={getEmbedUrl(activePin.videoUrl)} className="w-full aspect-video" allowFullScreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" />
                     : <video src={activePin.videoUrl} controls className="w-full" />
                   }
+                </div>
+              )}
+              {activePin.audioUrl && (
+                <div className="bg-[#0a1f12]/80 border border-[#4caf50]/20 rounded-xl p-3 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#4caf50]/12 border border-[#4caf50]/20 flex items-center justify-center flex-shrink-0">
+                    <svg viewBox="0 0 24 24" fill="#4caf50" className="w-4 h-4">
+                      <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white/50 text-[10px] uppercase tracking-wider mb-1.5">Audio</p>
+                    <audio controls src={activePin.audioUrl} className="w-full h-8" style={{ accentColor: '#4caf50' }} />
+                  </div>
                 </div>
               )}
               {activePin.direccion && (

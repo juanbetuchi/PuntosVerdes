@@ -8,6 +8,7 @@ export interface IPin extends Document {
   descripcion: string
   imagenes: string[]
   videoUrl: string
+  audioUrl: string
   direccion: string
   color: 'green' | 'yellow' | 'red' | 'blue'
   materiales: string[]
@@ -23,6 +24,7 @@ const PinSchema = new Schema<IPin>({
   descripcion: { type: String, default: '' },
   imagenes:    [{ type: String }],
   videoUrl:    { type: String, default: '' },
+  audioUrl:    { type: String, default: '' },
   direccion:   { type: String, default: '' },
   color:       { type: String, default: 'green', enum: ['green', 'yellow', 'red', 'blue'] },
   materiales:  [{ type: String }],

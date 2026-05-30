@@ -2,13 +2,14 @@
 import { useEffect, useRef, useState } from 'react'
 import Toast from '../Toast'
 import ImageInput from './ImageInput'
+import AudioInput from './AudioInput'
 
 interface Mapa { _id: string; nombre: string; imageUrl: string }
 interface Pin {
   _id: string; mapaId: string
   x: number; y: number
   titulo: string; descripcion: string
-  imagenes: string[]; videoUrl: string
+  imagenes: string[]; videoUrl: string; audioUrl: string
   direccion: string; color: PinColor
   materiales: string[]; lat: number | null; lng: number | null
 }
@@ -16,7 +17,7 @@ interface Pin {
 type PinColor = 'green' | 'yellow' | 'red' | 'blue'
 
 const emptyForm = {
-  titulo: '', descripcion: '', imagenes: ['', '', ''], videoUrl: '',
+  titulo: '', descripcion: '', imagenes: ['', '', ''], videoUrl: '', audioUrl: '',
   direccion: '', color: 'green' as PinColor,
   materiales: [] as string[], lat: '', lng: '',
 }
@@ -138,6 +139,10 @@ function PinForm({ values, onChange, onSubmit, onCancel, title, saving }: {
         </div>
       ))}
       <input type="url" placeholder="URL video (YouTube o directo, opcional)" value={values.videoUrl} onChange={e => onChange({ ...values, videoUrl: e.target.value })} className={inputClass} />
+      <div>
+        <p className="text-white/40 text-xs mb-1">Audio (opcional)</p>
+        <AudioInput value={values.audioUrl} onChange={v => onChange({ ...values, audioUrl: v })} />
+      </div>
       <div className="flex gap-2 pt-1">
         <button type="submit" disabled={saving} className="flex-1 py-2 bg-[#4caf50] hover:bg-[#43a047] text-white text-sm font-medium rounded-lg disabled:opacity-50">
           {saving ? 'Guardando...' : 'Guardar pin'}
@@ -261,6 +266,7 @@ export default function PinsEditor({ adminPin }: Props) {
           mapaId: selectedId, x: newCoords.x, y: newCoords.y,
           titulo: form.titulo, descripcion: form.descripcion,
           imagenes: form.imagenes.filter(Boolean), videoUrl: form.videoUrl,
+          audioUrl: form.audioUrl,
           direccion: form.direccion, color: form.color,
           materiales: form.materiales,
           lat: form.lat ? parseFloat(form.lat) : null,
@@ -286,6 +292,7 @@ export default function PinsEditor({ adminPin }: Props) {
       descripcion: pin.descripcion,
       imagenes: [...pin.imagenes, '', '', ''].slice(0, 3),
       videoUrl: pin.videoUrl,
+      audioUrl: pin.audioUrl ?? '',
       direccion: pin.direccion ?? '',
       color: pin.color ?? 'green',
       materiales: pin.materiales ?? [],
@@ -307,6 +314,7 @@ export default function PinsEditor({ adminPin }: Props) {
           descripcion: editForm.descripcion,
           imagenes: editForm.imagenes.filter(Boolean),
           videoUrl: editForm.videoUrl,
+          audioUrl: editForm.audioUrl,
           direccion: editForm.direccion,
           color: editForm.color,
           materiales: editForm.materiales,
