@@ -44,6 +44,10 @@ function isYoutube(url: string) { return url.includes('youtube.com') || url.incl
 /* distancia entre dos pins en espacio % */
 function dist(a: Pin, b: Pin) { return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2) }
 
+function getDensity(pin: Pin, all: Pin[]): number {
+  return all.filter(p => p._id !== pin._id && dist(p, pin) < 25).length
+}
+
 interface Burst { id: number; x: number; y: number; emoji: string; dx: number; er: number }
 const BURST_EMOJIS = ['🌿', '♻️', '🌱', '✨', '🍃', '💚']
 
@@ -214,7 +218,28 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
           <div key={i} className={`absolute w-6 h-6 ${cls} border-[#4caf50]/25 z-10 pointer-events-none`} />
         ))}
 
-        <img src={mapa.imageUrl} alt={mapa.nombre} className="w-full block" />
+        <img
+          src={mapa.imageUrl}
+          alt={mapa.nombre}
+          className="w-full block map-breath"
+          style={{
+            transition: 'transform 0.75s cubic-bezier(0.25,0.46,0.45,0.94)',
+            transform: hovPin ? 'scale(1.07)' : 'scale(1)',
+            transformOrigin: hovPin ? `${hovPin.x}% ${hovPin.y}%` : 'center',
+          }}
+        />
+
+        {/* Spotlight: oscurece el fondo lejos del pin hover */}
+        <div
+          className="absolute inset-0 pointer-events-none z-[5]"
+          style={{
+            transition: 'opacity 0.5s ease',
+            opacity: hovPin ? 1 : 0,
+            background: hovPin
+              ? `radial-gradient(circle 28% at ${hovPin.x}% ${hovPin.y}%, transparent 0%, rgba(0,0,0,0.38) 100%)`
+              : 'none',
+          }}
+        />
 
         {/* ── SVG overlay: líneas conectoras ── */}
         {hovPin && (
@@ -268,6 +293,8 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
           const matches   = pinMatchesFiltro(pin)
           const pal = PIN_PALETTE[pin.color ?? 'green']
           const validImages = (pin.imagenes ?? []).filter(Boolean)
+          const density = getDensity(pin, pins)
+          const rippleDur = density >= 3 ? '1.1s' : density === 2 ? '1.5s' : density === 1 ? '2s' : '2.8s'
           return (
             <button
               key={pin._id}
@@ -295,9 +322,9 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
               {/* Ondas múltiples */}
               {!isActive && (
                 <>
-                  <span className="ripple1 absolute left-1/2 top-1/2 w-5 h-5 rounded-full pointer-events-none" style={{ background: `${pal.ripple}55` }} />
-                  <span className="ripple2 absolute left-1/2 top-1/2 w-5 h-5 rounded-full pointer-events-none" style={{ background: `${pal.ripple}40` }} />
-                  <span className="ripple3 absolute left-1/2 top-1/2 w-5 h-5 rounded-full pointer-events-none" style={{ background: `${pal.ripple}25` }} />
+                  <span className="ripple1 absolute left-1/2 top-1/2 w-5 h-5 rounded-full pointer-events-none" style={{ background: `${pal.ripple}55`, animationDuration: rippleDur }} />
+                  <span className="ripple2 absolute left-1/2 top-1/2 w-5 h-5 rounded-full pointer-events-none" style={{ background: `${pal.ripple}40`, animationDuration: rippleDur }} />
+                  <span className="ripple3 absolute left-1/2 top-1/2 w-5 h-5 rounded-full pointer-events-none" style={{ background: `${pal.ripple}25`, animationDuration: rippleDur }} />
                 </>
               )}
 

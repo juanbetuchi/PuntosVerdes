@@ -250,6 +250,13 @@ html { scroll-behavior: smooth; }
 }
 .bounce-down { animation: bounceDown 1.9s ease-in-out infinite; }
 
+/* ── Mapa: respiración suave de color ── */
+@keyframes mapBreath {
+  0%,100% { filter: brightness(1) saturate(1); }
+  50%      { filter: brightness(1.05) saturate(1.12); }
+}
+.map-breath { animation: mapBreath 7s ease-in-out infinite; }
+
 /* ── Cards blancas glassmorphism ── */
 .glass-card {
   background: rgba(255,255,255,0.055);
