@@ -23,7 +23,7 @@ interface Pin {
   imagenes: string[]; videoUrl: string
   materiales?: string[]
   direccion?: string
-  color?: string
+  color?: 'green' | 'yellow' | 'red' | 'blue'
   lat?: number | null
   lng?: number | null
 }
