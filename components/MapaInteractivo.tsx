@@ -269,7 +269,7 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
           return (
             <button
               key={pin._id}
-              className="absolute -translate-x-1/2 -translate-y-1/2 group focus:outline-none z-20 pin-appear transition-opacity duration-300"
+              className={`absolute -translate-x-1/2 -translate-y-1/2 group focus:outline-none pin-appear transition-opacity duration-300 ${isHovered ? 'z-40' : 'z-20'}`}
               style={{
                 left: `${pin.x}%`,
                 top: `${pin.y}%`,
