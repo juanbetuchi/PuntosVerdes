@@ -317,9 +317,18 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
                 </g>
               </svg>
 
-              {/* Preview hover rico */}
-              {!isActive && (
-                <div className="hidden group-hover:flex absolute bottom-full left-1/2 -translate-x-1/2 mb-3 flex-col items-center pointer-events-none z-30 w-56">
+              {/* Preview hover rico — posición inteligente según ubicación del pin */}
+              {!isActive && (() => {
+                const showBelow  = pin.y < 35
+                const alignLeft  = pin.x < 22
+                const alignRight = pin.x > 78
+                const vCls = showBelow  ? 'top-full mt-3'   : 'bottom-full mb-3'
+                const hCls = alignLeft  ? 'left-0'
+                           : alignRight ? 'right-0'
+                           : 'left-1/2 -translate-x-1/2'
+                return (
+                <div className={`hidden group-hover:flex absolute ${vCls} ${hCls} flex-col ${showBelow ? '' : 'items-center'} pointer-events-none z-30 w-56`}
+                  style={{ flexDirection: showBelow ? 'column-reverse' : 'column' }}>
                   <div className="border border-[#4caf50]/20 rounded-2xl overflow-hidden w-full text-left"
                     style={{ background: '#0d2318', boxShadow: '0 8px 40px rgba(0,0,0,0.85), 0 0 24px rgba(76,175,80,0.1)' }}>
                     {validImages[0] && (
@@ -381,9 +390,12 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
                       </div>
                     </div>
                   </div>
-                  <div className="w-2.5 h-2.5 border-b border-r border-[#4caf50]/20 rotate-45 -mt-1.5" style={{ background: '#0d2318' }} />
+                  {/* Triángulo apuntando al pin — arriba si card está abajo, abajo si card está arriba */}
+                  <div className={`w-2.5 h-2.5 border-[#4caf50]/20 rotate-45 self-center ${showBelow ? 'border-t border-l -mb-1.5 order-first' : 'border-b border-r -mt-1.5'}`}
+                    style={{ background: '#0d2318' }} />
                 </div>
-              )}
+                )
+              })()}
             </button>
           )
         })}
