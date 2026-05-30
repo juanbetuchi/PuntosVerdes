@@ -22,6 +22,10 @@ interface Pin {
   titulo: string; descripcion: string
   imagenes: string[]; videoUrl: string
   materiales?: string[]
+  direccion?: string
+  color?: string
+  lat?: number | null
+  lng?: number | null
 }
 interface PublicPageProps {
   mapas: Mapa[]
@@ -266,7 +270,7 @@ export default function PublicPage({ mapas, pinsMap }: PublicPageProps) {
   const stats = {
     totalPins:       allPins.length,
     totalMapas:      mapas.length,
-    totalMateriales: new Set(allPins.flatMap(p => p.materiales ?? [])).size || 10,
+    totalMateriales: new Set(allPins.flatMap(p => p.materiales ?? [])).size,
   }
 
   return (

@@ -60,7 +60,7 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
   const pinsConCoordenadas = pins.filter(p => p.lat != null && p.lng != null)
 
   /* Materiales disponibles en este mapa (ordenados según MATERIALES_OPTS) */
-  const allMatKeys = [...new Set(pins.flatMap(p => p.materiales ?? []))]
+  const allMatKeys = Array.from(new Set(pins.flatMap(p => p.materiales ?? [])))
   const materialesDisponibles = [
     ...MATERIALES_OPTS.filter(o => allMatKeys.includes(o.key)),
     ...allMatKeys.filter(k => !MATERIALES_OPTS.find(o => o.key === k)).map(k => ({ key: k, emoji: '♻️', label: k })),
@@ -421,9 +421,9 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
                   </div>
                 </div>
               )}
-              {activePin.imagenes?.length > 0 && (
+              {(activePin.imagenes ?? []).filter(Boolean).length > 0 && (
                 <div className="flex gap-2 flex-wrap">
-                  {activePin.imagenes.map((url, i) => (
+                  {(activePin.imagenes ?? []).filter(Boolean).map((url, i) => (
                     <img key={i} src={url} alt="" className="w-24 h-20 object-cover rounded-xl border border-white/8 shadow-md" />
                   ))}
                 </div>

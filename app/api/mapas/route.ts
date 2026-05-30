@@ -23,7 +23,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
   await connectDB()
-  const body = await req.json()
-  const mapa = await Mapa.create(body)
-  return NextResponse.json(mapa, { status: 201 })
+  try {
+    const body = await req.json()
+    const mapa = await Mapa.create(body)
+    return NextResponse.json(mapa, { status: 201 })
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Error al crear mapa'
+    return NextResponse.json({ error: msg }, { status: 400 })
+  }
 }

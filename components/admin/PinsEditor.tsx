@@ -271,6 +271,7 @@ export default function PinsEditor({ adminPin }: Props) {
         const pin = await res.json()
         setPins(p => [...p, pin])
         setNewCoords(null)
+        setForm(emptyForm)
         setToast('Pin creado')
       }
     } finally {
