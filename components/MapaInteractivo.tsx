@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type PinColor = 'green' | 'yellow' | 'red' | 'blue'
 
@@ -48,14 +48,18 @@ interface Burst { id: number; x: number; y: number; emoji: string; dx: number; e
 const BURST_EMOJIS = ['🌿', '♻️', '🌱', '✨', '🍃', '💚']
 
 export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[] }) {
-  const [activePin, setActivePin]     = useState<Pin | null>(null)
-  const [hoveredId, setHoveredId]     = useState<string | null>(null)
-  const [bursts, setBursts]           = useState<Burst[]>([])
-  const [nearestId, setNearestId]     = useState<string | null>(null)
-  const [locating, setLocating]       = useState(false)
-  const [geoToast, setGeoToast]       = useState('')
+  const [activePin, setActivePin]       = useState<Pin | null>(null)
+  const [hoveredId, setHoveredId]       = useState<string | null>(null)
+  const [bursts, setBursts]             = useState<Burst[]>([])
+  const [nearestId, setNearestId]       = useState<string | null>(null)
+  const [locating, setLocating]         = useState(false)
+  const [geoToast, setGeoToast]         = useState('')
   const [selectedMats, setSelectedMats] = useState<string[]>([])
-  const containerRef                  = useRef<HTMLDivElement>(null)
+  const [imgIdx, setImgIdx]             = useState(0)
+  const touchStartX                     = useRef(0)
+  const containerRef                    = useRef<HTMLDivElement>(null)
+
+  useEffect(() => setImgIdx(0), [activePin?._id])
 
   const pinsConCoordenadas = pins.filter(p => p.lat != null && p.lng != null)
 
@@ -316,9 +320,8 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
               {/* Preview hover rico */}
               {!isActive && (
                 <div className="hidden group-hover:flex absolute bottom-full left-1/2 -translate-x-1/2 mb-3 flex-col items-center pointer-events-none z-30 w-56">
-                  <div className="bg-[#071410]/97 backdrop-blur-md border border-[#4caf50]/25 rounded-2xl overflow-hidden w-full text-left"
-                    style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.7), 0 0 20px rgba(76,175,80,0.12)' }}>
-                    {/* Imagen del pin */}
+                  <div className="border border-[#4caf50]/20 rounded-2xl overflow-hidden w-full text-left"
+                    style={{ background: '#0d2318', boxShadow: '0 8px 40px rgba(0,0,0,0.85), 0 0 24px rgba(76,175,80,0.1)' }}>
                     {validImages[0] && (
                       <div className="w-full h-28 overflow-hidden">
                         <img src={validImages[0]} alt="" className="w-full h-full object-cover"
@@ -326,62 +329,59 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
                       </div>
                     )}
                     <div className="p-3">
-                      {/* Color + título */}
                       <div className="flex items-start gap-2 mb-1">
                         <span className="w-2 h-2 rounded-full flex-shrink-0 mt-1" style={{ background: pal.stroke }} />
                         <p className="text-white text-xs font-bold leading-snug">{pin.titulo}</p>
                       </div>
-                      {/* Descripción */}
                       {pin.descripcion && (
-                        <p className="text-white/50 text-[11px] mt-1 line-clamp-2 leading-relaxed pl-4">{pin.descripcion}</p>
+                        <p className="text-white/65 text-[11px] mt-1 line-clamp-2 leading-relaxed pl-4">{pin.descripcion}</p>
                       )}
-                      {/* Materiales */}
                       {pin.materiales && pin.materiales.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2 pl-4">
-                          {pin.materiales.slice(0, 5).map(mat => {
+                          {pin.materiales.slice(0, 4).map(mat => {
                             const opt = MATERIALES_OPTS.find(o => o.key === mat)
                             return (
-                              <span key={mat} className="text-[10px] bg-[#4caf50]/10 border border-[#4caf50]/15 text-white/65 px-1.5 py-0.5 rounded-full">
+                              <span key={mat} className="text-[10px] bg-[#4caf50]/15 border border-[#4caf50]/20 text-white/75 px-1.5 py-0.5 rounded-full">
                                 {opt ? `${opt.emoji} ${opt.label}` : mat}
                               </span>
                             )
                           })}
-                          {pin.materiales.length > 5 && (
-                            <span className="text-[10px] text-white/30">+{pin.materiales.length - 5}</span>
-                          )}
+                          {pin.materiales.length > 4 && <span className="text-[10px] text-white/40">+{pin.materiales.length - 4}</span>}
                         </div>
                       )}
-                      {/* Indicadores: fotos, video, dirección */}
-                      <div className="flex items-center gap-3 mt-2 pt-2 border-t border-white/5">
+                      <div className="flex items-center gap-2.5 mt-2 pt-2 border-t border-white/8">
                         {validImages.length > 1 && (
-                          <span className="flex items-center gap-1 text-[10px] text-white/35">
+                          <span className="flex items-center gap-1 text-[10px] text-white/50">
                             <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                            {validImages.length} fotos
+                            {validImages.length}
                           </span>
                         )}
                         {pin.videoUrl && (
-                          <span className="flex items-center gap-1 text-[10px] text-white/35">
+                          <span className="flex items-center gap-1 text-[10px] text-white/50">
                             <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M8 5v14l11-7z"/></svg>
                             Video
                           </span>
                         )}
                         {pin.audioUrl && (
-                          <span className="flex items-center gap-1 text-[10px] text-white/35">
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                          <span className="flex items-center gap-1 text-[10px] text-white/50">
+                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M9 18V5l12-2v13"/></svg>
                             Audio
                           </span>
                         )}
                         {pin.direccion && (
-                          <span className="flex items-center gap-1 text-[10px] text-white/35">
+                          <span className="flex items-center gap-1 text-[10px] text-white/50">
                             <svg viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-                            Cómo llegar
+                            Mapa
                           </span>
                         )}
-                        <span className="ml-auto text-[#4caf50]/50 text-[10px]">ver más →</span>
+                      </div>
+                      <div className="mt-2 py-1.5 rounded-lg text-center text-[10px] font-semibold tracking-wide"
+                        style={{ background: `${pal.stroke}22`, color: pal.stroke, border: `1px solid ${pal.stroke}33` }}>
+                        Presioná para más info
                       </div>
                     </div>
                   </div>
-                  <div className="w-2.5 h-2.5 bg-[#071410]/97 border-b border-r border-[#4caf50]/25 rotate-45 -mt-1.5" />
+                  <div className="w-2.5 h-2.5 border-b border-r border-[#4caf50]/20 rotate-45 -mt-1.5" style={{ background: '#0d2318' }} />
                 </div>
               )}
             </button>
@@ -427,13 +427,36 @@ export default function MapaInteractivo({ mapa, pins }: { mapa: Mapa; pins: Pin[
                   </div>
                 </div>
               )}
-              {(activePin.imagenes ?? []).filter(Boolean).length > 0 && (
-                <div className="flex gap-2 flex-wrap">
-                  {(activePin.imagenes ?? []).filter(Boolean).map((url, i) => (
-                    <img key={i} src={url} alt="" className="w-24 h-20 object-cover rounded-xl border border-white/8 shadow-md" />
-                  ))}
-                </div>
-              )}
+              {(() => {
+                const modalImages = (activePin.imagenes ?? []).filter(Boolean)
+                if (modalImages.length === 0) return null
+                return (
+                  <div className="relative rounded-xl overflow-hidden bg-[#071410] border border-white/8 select-none"
+                    onTouchStart={e => { touchStartX.current = e.touches[0].clientX }}
+                    onTouchEnd={e => {
+                      const diff = touchStartX.current - e.changedTouches[0].clientX
+                      if (Math.abs(diff) > 40) setImgIdx(i => diff > 0 ? (i+1)%modalImages.length : (i-1+modalImages.length)%modalImages.length)
+                    }}
+                  >
+                    <img src={modalImages[imgIdx]} alt="" className="w-full h-52 object-cover" />
+                    {modalImages.length > 1 && (
+                      <>
+                        <button onClick={() => setImgIdx(i => (i-1+modalImages.length)%modalImages.length)}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white text-lg flex items-center justify-center transition-colors">‹</button>
+                        <button onClick={() => setImgIdx(i => (i+1)%modalImages.length)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white text-lg flex items-center justify-center transition-colors">›</button>
+                        <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex gap-1.5">
+                          {modalImages.map((_, i) => (
+                            <button key={i} onClick={() => setImgIdx(i)}
+                              className={`rounded-full transition-all duration-200 ${i===imgIdx ? 'w-4 h-2 bg-white' : 'w-2 h-2 bg-white/40'}`} />
+                          ))}
+                        </div>
+                        <div className="absolute top-2 right-2 bg-black/55 rounded-full px-2 py-0.5 text-white/65 text-[10px]">{imgIdx+1}/{modalImages.length}</div>
+                      </>
+                    )}
+                  </div>
+                )
+              })()}
               {activePin.videoUrl && (
                 <div className="rounded-xl overflow-hidden border border-white/8">
                   {isYoutube(activePin.videoUrl)

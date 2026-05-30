@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import TopNav from './TopNav'
 import HeroCarousel from './HeroCarousel'
 import MapaInteractivo from './MapaInteractivo'
@@ -59,6 +59,48 @@ const floatingLeaves = [
   { x:'65%', y:'78%', s:14, r:18,  ld:'23s', d:'0.7s', lo:0.04 },
 ]
 
+function useScrollReveal() {
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view') }),
+      { threshold: 0.1 }
+    )
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el))
+    return () => obs.disconnect()
+  }, [])
+}
+
+const PASOS = [
+  {
+    num: '01', title: 'Explorá el mapa',
+    desc: 'Encontrá los puntos verdes más cercanos usando el mapa interactivo con filtros por material.',
+    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>,
+  },
+  {
+    num: '02', title: 'Separar en casa',
+    desc: 'Clasificá tus residuos reciclables: papel, vidrio, plástico, electrónicos y más.',
+    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/></svg>,
+  },
+  {
+    num: '03', title: 'Llevá y reciclá',
+    desc: 'Acercate al punto elegido y entregá los materiales. Juntos construimos una ciudad más limpia.',
+    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>,
+  },
+]
+
+const MATERIALES_LANDING = [
+  { emoji:'📦', label:'Cartón',       desc:'Cajas, revistas' },
+  { emoji:'🍾', label:'Vidrio',        desc:'Botellas, frascos' },
+  { emoji:'🥤', label:'Plástico',      desc:'Envases, botellas' },
+  { emoji:'📱', label:'Electrónico',   desc:'Celulares, PC' },
+  { emoji:'🪫', label:'Pilas',         desc:'Todo tipo' },
+  { emoji:'🔩', label:'Metal',         desc:'Latas, aluminio' },
+  { emoji:'👕', label:'Ropa',          desc:'Indumentaria' },
+  { emoji:'🌱', label:'Orgánico',      desc:'Restos cocina' },
+  { emoji:'🫙', label:'Aceite',        desc:'Vegetal usado' },
+  { emoji:'💊', label:'Medicamentos',  desc:'Vencidos' },
+]
+
 const homeCards = [
   {
     key: 'local' as const,
@@ -87,8 +129,12 @@ function HomeScreen({ onSelect, stats }: {
   onSelect: (c: 'local' | 'provincial') => void
   stats: { totalPins: number; totalMapas: number; totalMateriales: number }
 }) {
+  useScrollReveal()
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div>
+
+    {/* ─── HERO ─── */}
+    <section className="relative w-full h-screen overflow-hidden">
 
       {/* Fondo Ken Burns — va detrás de la nav */}
       <div className="absolute inset-0">
@@ -217,12 +263,113 @@ function HomeScreen({ onSelect, stats }: {
         </div>
       </div>
 
-      {/* Wave inferior */}
+      {/* Wave + scroll indicator */}
       <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-        <svg viewBox="0 0 1440 32" preserveAspectRatio="none" className="w-full h-6" fill="#1a3a2a">
-          <path d="M0,16 C240,32 480,0 720,16 C960,32 1200,8 1440,20 L1440,32 L0,32 Z"/>
+        <svg viewBox="0 0 1440 40" preserveAspectRatio="none" className="w-full h-8" fill="#071410">
+          <path d="M0,20 C240,40 480,0 720,20 C960,40 1200,8 1440,24 L1440,40 L0,40 Z"/>
         </svg>
       </div>
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none bounce-down">
+        <span className="text-white/35 text-[10px] uppercase tracking-widest">Scroll</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2" strokeLinecap="round" className="w-4 h-4">
+          <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+      </div>
+
+    </section>
+
+    {/* ─── CÓMO FUNCIONA ─── */}
+    <section className="py-24 px-6" style={{ background: '#071410' }}>
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-16 reveal">
+          <span className="text-[#4caf50]/60 text-xs uppercase tracking-[0.22em]">Paso a paso</span>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-3">¿Cómo funciona?</h2>
+          <p className="text-white/40 text-sm mt-2 max-w-md mx-auto">Tres pasos simples para ser parte de la red de reciclaje de Laboulaye</p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+          {PASOS.map((paso, i) => (
+            <div key={i} className={`reveal reveal-d${i+1} group`}>
+              <div className="relative bg-white/3 border border-white/8 rounded-2xl p-6 hover:border-[#4caf50]/30 hover:bg-white/5 transition-all duration-300">
+                <div className="absolute -top-4 left-6 bg-[#4caf50] text-white text-xs font-black px-3 py-1 rounded-full tracking-wider shadow-lg shadow-[#4caf50]/20">
+                  {paso.num}
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-[#4caf50]/10 border border-[#4caf50]/20 flex items-center justify-center text-[#4caf50] mb-4 mt-2 group-hover:bg-[#4caf50]/20 transition-colors">
+                  {paso.icon}
+                </div>
+                <h3 className="text-white font-bold text-base mb-2">{paso.title}</h3>
+                <p className="text-white/50 text-sm leading-relaxed">{paso.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ─── MATERIALES ─── */}
+    <section className="py-24 px-6" style={{ background: '#060f08' }}>
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-14 reveal">
+          <span className="text-[#4caf50]/60 text-xs uppercase tracking-[0.22em]">Qué podés reciclar</span>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-3">Materiales aceptados</h2>
+          <p className="text-white/40 text-sm mt-2 max-w-md mx-auto">Cada punto verde indica qué materiales recibe. Filtralo desde el mapa.</p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          {MATERIALES_LANDING.map((m, i) => (
+            <div key={i} className={`reveal reveal-d${Math.min(i % 5 + 1, 5)} flex flex-col items-center gap-2 bg-white/3 border border-white/8 rounded-2xl p-4 hover:border-[#4caf50]/30 hover:bg-white/5 transition-all duration-300 text-center`}>
+              <span className="text-3xl">{m.emoji}</span>
+              <span className="text-white font-semibold text-sm">{m.label}</span>
+              <span className="text-white/35 text-[10px] leading-tight">{m.desc}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ─── CTA ─── */}
+    <section className="py-20 px-6 text-center" style={{ background: '#071410' }}>
+      <div className="max-w-xl mx-auto reveal">
+        <svg viewBox="0 0 24 24" fill="#4caf50" className="w-10 h-10 mx-auto mb-4 opacity-70">
+          <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/>
+        </svg>
+        <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3">¿Listo para reciclar?</h2>
+        <p className="text-white/45 text-sm mb-10">Explorá los puntos verdes de Laboulaye y la región sur de Córdoba.</p>
+        <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto">
+          {homeCards.map((card) => (
+            <button key={card.key} onClick={() => onSelect(card.key)}
+              className="flex flex-col items-center gap-2.5 py-5 px-4 rounded-2xl border border-[#4caf50]/25 bg-[#4caf50]/8 hover:bg-[#4caf50]/15 hover:border-[#4caf50]/45 transition-all duration-200 group">
+              <div className="w-10 h-10 rounded-xl bg-[#4caf50]/15 border border-[#4caf50]/25 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 group-hover:bg-[#4caf50]/25 transition-colors">
+                {card.icon}
+              </div>
+              <span className="text-white font-semibold text-xs">{card.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ─── FOOTER ─── */}
+    <footer style={{ background: '#040c06' }} className="border-t border-white/5 py-10 px-8">
+      <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
+        <div className="flex items-center gap-3">
+          <svg viewBox="0 0 24 24" fill="#4caf50" className="w-7 h-7 opacity-80">
+            <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 8-8 8-.5-2-1-4-5-3z"/>
+          </svg>
+          <div>
+            <p className="text-white font-bold text-sm">Puntos Verdes</p>
+            <p className="text-white/35 text-[11px]">Ciudad de Laboulaye · Córdoba</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-6 text-white/25 text-xs">
+          <button onClick={() => onSelect('local')} className="hover:text-white/60 transition-colors">Puntos Locales</button>
+          <button onClick={() => onSelect('provincial')} className="hover:text-white/60 transition-colors">Puntos Provinciales</button>
+        </div>
+        <p className="text-white/18 text-[11px] text-center sm:text-right">
+          Municipalidad de Laboulaye<br/>
+          Secretaría de Medio Ambiente
+        </p>
+      </div>
+    </footer>
+
     </div>
   )
 }
