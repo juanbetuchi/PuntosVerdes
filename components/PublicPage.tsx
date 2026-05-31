@@ -97,8 +97,6 @@ const MATERIALES_LANDING = [
   { emoji:'🔩', label:'Metal',         desc:'Latas, aluminio' },
   { emoji:'👕', label:'Ropa',          desc:'Indumentaria' },
   { emoji:'🌱', label:'Orgánico',      desc:'Restos cocina' },
-  { emoji:'🫙', label:'Aceite',        desc:'Vegetal usado' },
-  { emoji:'💊', label:'Medicamentos',  desc:'Vencidos' },
 ]
 
 const homeCards = [
