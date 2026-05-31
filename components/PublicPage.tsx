@@ -311,7 +311,7 @@ function HomeScreen({ onSelect, stats }: {
           <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-3">Materiales aceptados</h2>
           <p className="text-white/40 text-sm mt-2 max-w-md mx-auto">Cada punto verde indica qué materiales recibe. Filtralo desde el mapa.</p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 gap-3">
           {MATERIALES_LANDING.map((m, i) => (
             <div key={i} className={`reveal reveal-d${Math.min(i % 5 + 1, 5)} flex flex-col items-center gap-2 bg-white/3 border border-white/8 rounded-2xl p-4 hover:border-[#4caf50]/30 hover:bg-white/5 transition-all duration-300 text-center`}>
               <span className="text-3xl">{m.emoji}</span>
