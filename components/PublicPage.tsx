@@ -364,8 +364,7 @@ function HomeScreen({ onSelect, stats }: {
           <button onClick={() => onSelect('provincial')} className="hover:text-white/60 transition-colors">Puntos Provinciales</button>
         </div>
         <p className="text-white/18 text-[11px] text-center sm:text-right">
-          Municipalidad de Laboulaye<br/>
-          Secretaría de Medio Ambiente
+          Municipalidad de Laboulaye
         </p>
       </div>
     </footer>
