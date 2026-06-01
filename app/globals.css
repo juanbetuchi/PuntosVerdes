@@ -257,6 +257,38 @@ html { scroll-behavior: smooth; }
 }
 .map-breath { animation: mapBreath 7s ease-in-out infinite; }
 
+/* ── Material cards: fill effect (joe-watson-sbf) ── */
+.mat-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.mat-card::before {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 2px; width: 0;
+  background-color: #4caf50;
+  transition: width 0.5s ease;
+  z-index: 1;
+}
+.mat-card::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 0; width: 100%;
+  background-color: #4caf50;
+  transition: height 0.4s ease;
+  z-index: 0;
+}
+.mat-card:hover::before { width: 100%; }
+.mat-card:hover::after  { height: 100%; transition-delay: 0.4s; }
+.mat-card > * { position: relative; z-index: 2; }
+.mat-card .mat-label { transition: color 0.2s ease 0.6s; }
+.mat-card .mat-desc  { transition: color 0.2s ease 0.6s; }
+.mat-card:hover .mat-label { color: #071b10; }
+.mat-card:hover .mat-desc  { color: rgba(7,27,16,0.65); }
+
 /* ── Cards blancas glassmorphism ── */
 .glass-card {
   background: rgba(255,255,255,0.055);

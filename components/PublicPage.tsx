@@ -313,10 +313,10 @@ function HomeScreen({ onSelect, stats }: {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 gap-3">
           {MATERIALES_LANDING.map((m, i) => (
-            <div key={i} className={`reveal reveal-d${Math.min(i % 5 + 1, 5)} flex flex-col items-center gap-2 bg-white/3 border border-white/8 rounded-2xl p-4 hover:border-[#4caf50]/30 hover:bg-white/5 transition-all duration-300 text-center`}>
+            <div key={i} className={`mat-card reveal reveal-d${Math.min(i % 4 + 1, 4)} flex flex-col items-center gap-2 bg-white/3 border border-white/8 rounded-2xl p-4 transition-all duration-300 text-center`}>
               <span className="text-3xl">{m.emoji}</span>
-              <span className="text-white font-semibold text-sm">{m.label}</span>
-              <span className="text-white/35 text-[10px] leading-tight">{m.desc}</span>
+              <span className="mat-label text-white font-semibold text-sm">{m.label}</span>
+              <span className="mat-desc text-white/35 text-[10px] leading-tight">{m.desc}</span>
             </div>
           ))}
         </div>
